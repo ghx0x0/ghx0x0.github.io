@@ -93,6 +93,7 @@
 <li>安装过程中还有一个问题是，在卸载了kinect的微软官方SDK后，还要卸载pcl的openni和premesense，并重新安装，但是安装好后，cmake会提示找不到openni，无法得到kinfu和gpu的工程，找不到具体原因，第二天先利用cmake编译pcl1.7.1的源码能够找到openni，之后转到新的含有kinfu的pcl-master源码，此时才成功找到openni，并最终成功安装，这个问题的原因到现在也不知道。</li>
 </ol>
 <p>下面上几张kinfu的截图，简单的试了下，rgb图是按时间间隔采集的，所以有些地方有模型但是没纹理，另外纹理交界的地方并没有做纹理融合，这两个问题是我将来准备优化代码的方向。<br><img src="/img/QQ截图20141114194407.jpg" alt=""><br><img src="/img/QQ截图20141114194417.jpg" alt=""><br><img src="/img/QQ截图20141114194428.jpg" alt="">  </p>
+<p>补充一下：我下载的pcl-master源码，是在2014年11月8日的版本，官方后续版本应该会陆续修复已有bug。</p>
 
       
     </div>
