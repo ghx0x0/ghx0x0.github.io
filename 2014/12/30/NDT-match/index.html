@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>NDT 算法（与ICP对比）和一些常见配准算法 | GH‘s blog</title>
+  <meta name="author" content="GH">
+  
+  <meta name="description" content="目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="NDT 算法（与ICP对比）和一些常见配准算法"/>
+  <meta property="og:site_name" content="GH‘s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">GH‘s blog</a></h1>
+  <h2><a href="/">尚未被开垦的小帅哥</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">存档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-12-30T13:07:55.000Z"><a href="/2014/12/30/NDT-match/">12月 30 2014</a></time>
+      
+      
+  
+    <h1 class="title">NDT 算法（与ICP对比）和一些常见配准算法</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p><img src="/img/QQ截图20141230213405.jpg" alt=""><br>目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。  <a id="more"></a> </p>
+<h1 id="绪论：">绪论：</h1>
+<ul>
+<li>采样：   <ul>
+<li>3d点云数据在离相机近处点云密度大，远处密度小，所以在下采样时采用统一的采样方法还是会保留密度不均匀；<br>  一种方法是将空间划分格子，在每个格子内的点云随机取点，点数足够了即可。</li>
+<li>短波将会产生更高的分辨率和较少的镜面反射。采用多个深度相机会产生串扰的问题，尤其是镜面反射很厉害的时候。  </li>
+</ul>
+</li>
+</ul>
+<h1 id="可以采集图像深度的相机：">可以采集图像深度的相机：</h1>
+<ol>
+<li>雷达radio  </li>
+<li>激光雷达lidar      <ul>
+<li>三角测量法  </li>
+<li>TOF飞行时间法  </li>
+<li>相位差法  </li>
+</ul>
+</li>
+<li>声呐  </li>
+<li>双目视觉  <ul>
+<li>双目视觉是一个被动的三角测量；<br>缺点：<br>  A．双目视觉只有能被检测出来的特征点才能检测出深度，在低对比度的环境中，只有很少的特征点能够检测出；<br>  B．双目视觉的另一个缺点是岁两个相机之间的距离增大，深度精度减少，盲区增大，主要面向几米远的长距离测量。<br>  C．对于没有纹理的表面检测不出来。  </li>
+</ul>
+</li>
+<li>投影光三角测量  </li>
+<li>TOF深度相机  <ul>
+<li>实际上是采用相位偏移法测量；<br>TOF深度相机相比lidar的TOF是 采集速度快，硬件便宜<br>缺点是噪点很明显，并且需要标定，并且受外界光和本身主动光的影响。  而且曝光时间不容易确定  </li>
+</ul>
+</li>
+</ol>
+<h1 id="视图匹配（配准）：">视图匹配（配准）：</h1>
+<ol>
+<li>ICP<br>  缺点：<pre><code> A．要剔除不合适的点对（点对距离过大、包含边界点的点对）
+ B．基于点对的配准，并没有包含局部形状的信息
+ <span class="keyword">C</span>．每次迭代都要搜索最近点，计算代价高昂
+</code></pre>  存在多种优化了的变体算法，如八叉树等</li>
+<li>IDC  <pre><code> ICP的一种改进，采用极坐标代替笛卡尔坐标进行最近点搜索匹配
+</code></pre></li>
+<li>PIC     <pre><code> 考虑了点云的噪音和初始位置的不确定性
+</code></pre></li>
+<li>Point-based probabilistic registration      <pre><code> 需要首先建立深度图的三角面片
+</code></pre></li>
+<li>NDT——正态分布变换：  <pre><code> 计算正态分布是一个一次性的工作（初始化），不需要消耗大量代价计算最近邻搜索匹配点   
+ 概率密度函数在两幅图像采集之间的时间可以离线计算出来  
+</code></pre></li>
+<li>Gaussian fields  <pre><code> 和NDT正态分布变换类似，利用高斯混合模型考察点和点的距离和点周围表面的相似性
+</code></pre></li>
+<li>Quadratic patches  </li>
+<li>Likelihood-field matching——随机场匹配  </li>
+<li>CRF匹配  <pre><code> 缺点： 运行速度慢，在<span class="number">3d</span>中实时性能不好，误差大。
+</code></pre></li>
+<li>Branch-and-bound registration  </li>
+<li>Registration using local geometric features  </li>
+</ol>
+<h1 id="NDT算法：">NDT算法：</h1>
+<ol>
+<li>将空间（reference scan）划分成各个格子cell  </li>
+<li>将点云投票到各个格子  </li>
+<li><p>计算格子的正态分布PDF参数  </p>
+<p><img src="/img/QQ截图20141230213239.jpg" alt=""></p>
+</li>
+<li><p>将第二幅scan的每个点按转移矩阵T的变换  </p>
+</li>
+<li><p>第二幅scan的点落于reference的哪个 格子，计算响应的概率分布函数  </p>
+<p><img src="/img/QQ截图20141230213249.jpg" alt=""></p>
+</li>
+<li><p>求所有点的最优值，目标函数为  </p>
+</li>
+</ol>
+<p><img src="/img/QQ截图20141230213256.jpg" alt=""></p>
+<pre><code><span class="keyword">PDF</span>可以当做表面的近似表达，协方差矩阵的特征向量和特征值可以表达表面信息（朝向、平整度）
+格子内少于<span class="number">3</span>个点，经常会协方差矩阵不存在逆矩阵，所以只计算点数大于<span class="number">5</span>的cell，涉及到下采样方法。
+</code></pre><ul>
+<li>NDT的优化：<br>  格子参数最重要，太大导致精度不高，太小导致内存过高，并且只有两幅图像相差不大的情况才能匹配  </li>
+</ul>
+<ol>
+<li>固定尺寸  </li>
+<li>八叉树建立，格子有大有小  </li>
+<li>迭代，每次使用更精细的格子  </li>
+<li>K聚类，有多少个类就有多少个cell，格子大小不一  </li>
+<li>Linked-cell  </li>
+<li>三线插值    平滑相邻的格子cell导致的不连续，提高精度<br> 缺点：插值导致时间是普通的4倍<br> 优点：可以提高鲁棒性  </li>
+</ol>
+<h1 id="ICP算法：">ICP算法：</h1>
+<ol>
+<li>给定参考点集P和数据点集Q（在给定初始估计RT时）  </li>
+<li>对Q中的每一个点寻找P中的对应最近点，构成匹配点对  </li>
+<li>对匹配点对求欧氏距离和作为误差目标函数error  </li>
+<li>利用SVD分解求出R和T，使得error最小  </li>
+<li>将Q按照R和T旋转变化，并以此为基准回到1 重新寻找对应点对  </li>
+</ol>
+<pre><code>NDT 耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来；  
+ICP耗时多，容易陷入局部最优；  
+
+可以根据格子cell的<span class="keyword">PDF</span>的协方差矩阵计算特征向量特征值，每个格子有球形状、平面、线型三种类型，根据朝向作以统计，得到局部或者一幅图像的特征直方图  
+</code></pre><p>文章来自于Martin Magnusson的The Three-Dimensional Normal-Distributions Transform— an Efficient Representation for Registration,Surface Analysis, and Loop Detection。 作者详细介绍了NDT在各个条件下的配准效果及与其他配准方法的详细实验对比，并利用NDT算法配准矿洞内三维场景，同时完成SLAM任务。<br><img src="/img/QQ截图20141230213819.jpg" alt=""><br><img src="/img/QQ截图20141230213609.jpg" alt=""></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/三维配准/">三维配准</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/三维/">三维</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    
+    <a href="/2014/12/30/rusu-doctor-paper/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2014/12/30/NDT-match/ data-title=NDT 算法（与ICP对比）和一些常见配准算法 data-url=/2014/12/30/NDT-match/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/baidu" method="get" accept-charset="utf-8">
+    <input type="search" name="word" results="0" placeholder="搜索">
+    <input type="hidden" name="si" value="">
+    <input name=tn type=hidden value="bds">
+	<input name=cl type=hidden value="3">
+	<input name=ct type=hidden value="2097152">
+	<input name=s type=hidden value="on">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Pcl/">Pcl</a><small>4</small></li>
+  
+    <li><a href="/categories/hexo/">hexo</a><small>2</small></li>
+  
+    <li><a href="/categories/三维配准/">三维配准</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Pcl/" style="font-size: 20.00px;">Pcl</a><a href="/tags/github/" style="font-size: 13.33px;">github</a><a href="/tags/hexo/" style="font-size: 16.67px;">hexo</a><a href="/tags/hexo，github/" style="font-size: 10.00px;">hexo，github</a><a href="/tags/三维/" style="font-size: 13.33px;">三维</a>
+  </div>
+</div>
+
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 GH
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
+<a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
