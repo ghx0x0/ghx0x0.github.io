@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>安装带有kinfu的测试版本PCL | GH‘s blog</title>
+  <meta name="author" content="GH">
+  
+  <meta name="description" content="这几天看到kinect fusion 的效果后，对其非常感兴趣，于是也想搭建一个kinect fusion 的框架自己玩玩，无奈PCL中kinfu的开源代码一直是测试版本，并没有release发布版，于是只能默默的卸载之前安装的1.7.1版本换上PCL的测试版本。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="安装带有kinfu的测试版本PCL"/>
+  <meta property="og:site_name" content="GH‘s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">GH‘s blog</a></h1>
+  <h2><a href="/">尚未被开垦的小帅哥</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">存档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-11-14T10:59:54.000Z"><a href="/2014/11/14/install-pcl-master-for-kinfu/">11月 14 2014</a></time>
+      
+      
+  
+    <h1 class="title">安装带有kinfu的测试版本PCL</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p><img src="/img/QQ截图20141114194417.jpg" alt=""><br>这几天看到kinect fusion 的效果后，对其非常感兴趣，于是也想搭建一个kinect fusion 的框架自己玩玩，无奈PCL中kinfu的开源代码一直是测试版本，并没有release发布版，于是只能默默的卸载之前安装的1.7.1版本换上PCL的测试版本。   <a id="more"></a><br>Pcl的测试版本同样可以在github主页上下载，只要选中首页的master分支，并download into ZIP即可，kinfu的代码就在gpu文件夹下。  </p>
+<p><img src="/img/QQ截图20141114190428.jpg" alt=""></p>
+<p>相比于安装1.7.1版本，想要运行kinfu的话需要通过显卡GPU进行加速，事前需要安装的第三方库也更多，贴一张我的所有第三方库的截图：<br><img src="/img/QQ截图20141114192200.jpg" alt=""></p>
+<h1 id="具体安装步骤：">具体安装步骤：</h1>
+<ul>
+<li>事先准备：</li>
+</ul>
+<ol>
+<li>确认你的电脑显卡是N卡，并且运算能力在2.x (Fermi) or 3.x (Kepler) 以上；</li>
+<li>去英伟达官方网站下载cuda最新版本，并更新自己的显卡驱动，我的cuda是6.5版本，显卡为650M；</li>
+<li>还是更新自己的显卡驱动，显卡较新的驱动能够让最终kinfu的帧率更快！</li>
+<li>安装第三方库，BOOST  EIGEN  FLANN  QHULL   VTK   qt4.8.0  ，在安装前请清理干净原来的这些第三方库；</li>
+</ol>
+<ul>
+<li>开始安装：</li>
+</ul>
+<ol>
+<li>cmake编译源码，configure第一次后会出现很多红色的build，勾选上build_gpu即可，网上也有说勾选build_tools build_visulation build_cuda build_apps的，但是我的这里前两个是默认勾选了的，build_cuda build_apps我最终也没选；<br><img src="/img/QQ截图20141114192647.jpg" alt="">  </li>
+<li>在点击generate前仔细看看cmake下方的输出信息，to built里面是否包含了你所需要的所有功能；</li>
+<li>点击generate；</li>
+<li>vs打开生成的功能进行编译并install；</li>
+</ol>
+<h1 id="Tips_and_bugs：">Tips and bugs：</h1>
+<ol>
+<li>运行kinfu需要openni和primesense的支持，pcl从kinect抓取点云是基于openni的框架的，需要注意的是，事先千万不能安装kinect的微软官方SDK，因为官方的会屏蔽pcl的openni接口，最终pcl读取不出深度数据，显示can’t open depth source；</li>
+<li>进行测试时，可以先生成工程里的openni-viewer，测试pcl是否能成功获取kinect的数据，之后再生成kinfu-app进行测试，最终无误后生成全部的pcl，并install；</li>
+<li>此次版本的pcl源码存在的问题1:<br>在源码中进行编译时，无论选不选择BUILD_GPU，都会出现<br>libboost_thread-vc100-mt-gd-1_50.lib(thread.obj) : error LNK2019:这个错误<br><a href="http://blog.csdn.net/lming_08/article/details/19114417给出了这个问题的解决方法，在源码文件里的cmake/pcl_find_boost.cmake里把" target="_blank" rel="external">http://blog.csdn.net/lming_08/article/details/19114417给出了这个问题的解决方法，在源码文件里的cmake/pcl_find_boost.cmake里把</a><br>Required boost modules<br>find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)<br>修改为<br>Required boost modules<br>find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams chrono) </li>
+<li>此次版本的pcl源码存在的问题2:<br>本来以为这下快要大功告成了，没想到1个小时后编译结果是130+成功，2个失败，当时特别丧气。。失败的原因在于出现了有关PNG的错误，贴图如下：<br><img src="/img/无标题.png" alt=""><br>网上公开的解决方案是在源码的tools文件夹里的cmakelist打开后，屏蔽掉<br>PCL_ADD_EXECUTABLE(pcl_pcd2png “${SUBSYS_NAME}” pcd2png.cpp)<br>target_link_libraries(pcl_pcd2png pcl_common pcl_io)<br>PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png “${SUBSYS_NAME}” organized_pcd_to_png.cpp)<br>target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)<br>这四句就可以了，最终可以正确安装完整的pcl </li>
+<li>安装过程中还有一个问题是，在卸载了kinect的微软官方SDK后，还要卸载pcl的openni和premesense，并重新安装，但是安装好后，cmake会提示找不到openni，无法得到kinfu和gpu的工程，找不到具体原因，第二天先利用cmake编译pcl1.7.1的源码能够找到openni，之后转到新的含有kinfu的pcl-master源码，此时才成功找到openni，并最终成功安装，这个问题的原因到现在也不知道。</li>
+</ol>
+<p>下面上几张kinfu的截图，简单的试了下，rgb图是按时间间隔采集的，所以有些地方有模型但是没纹理，另外纹理交界的地方并没有做纹理融合，这两个问题是我将来准备优化代码的方向。<br><img src="/img/QQ截图20141114194407.jpg" alt=""><br><img src="/img/QQ截图20141114194417.jpg" alt=""><br><img src="/img/QQ截图20141114194428.jpg" alt="">  </p>
+<p>补充一下：我下载的pcl-master源码，是在2014年11月8日的版本，官方后续版本应该会陆续修复已有bug。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Pcl/">Pcl</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Pcl/">Pcl</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    <a href="/2014/12/30/rusu-doctor-paper/" class="alignleft prev" >上一页</a>
+    
+    
+    <a href="/2014/11/14/install-pcl1-7-1/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2014/11/14/install-pcl-master-for-kinfu/ data-title=安装带有kinfu的测试版本PCL data-url=/2014/11/14/install-pcl-master-for-kinfu/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/baidu" method="get" accept-charset="utf-8">
+    <input type="search" name="word" results="0" placeholder="搜索">
+    <input type="hidden" name="si" value="">
+    <input name=tn type=hidden value="bds">
+	<input name=cl type=hidden value="3">
+	<input name=ct type=hidden value="2097152">
+	<input name=s type=hidden value="on">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Pcl/">Pcl</a><small>4</small></li>
+  
+    <li><a href="/categories/hexo/">hexo</a><small>2</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Pcl/" style="font-size: 20.00px;">Pcl</a><a href="/tags/github/" style="font-size: 13.33px;">github</a><a href="/tags/hexo/" style="font-size: 16.67px;">hexo</a><a href="/tags/hexo，github/" style="font-size: 10.00px;">hexo，github</a>
+  </div>
+</div>
+
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2014 GH
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
+<a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
