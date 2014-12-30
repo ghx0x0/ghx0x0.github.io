@@ -51,6 +51,143 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2014-12-30T11:46:53.000Z"><a href="/2014/12/30/rusu-doctor-paper/">12月 30 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/12/30/rusu-doctor-paper/">rusu doctor paper</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>前面已经简单介绍了PCL和他的开拓者rusu,这篇博文是自己阅读完他的毕业论文后的记录，现给出记录与大家分享，有理解不对的地方可以共同交流。</p>
+<h1 id="绪论">绪论</h1>
+<ul>
+<li>之所以采用3维点云的方式是因为</li>
+</ul>
+<ol>
+<li>2d视觉的相机很容易受外界光的影响，曝光不足或光强变化剧烈等等</li>
+<li>2d视觉是世界到相机的投影变换，视野受限，在特征点匹配中容易把相似的不同物体误匹配。</li>
+</ol>
+<ul>
+<li>在计算过程中的问题</li>
+</ul>
+<ol>
+<li>将输入点云转换成有意义的各个物体</li>
+<li>点云噪声影响很大，如何克服</li>
+</ol>
+<ul>
+<li>本文介绍了三个部分，</li>
+</ul>
+<ol>
+<li>第一个部分介绍了点云的集中特性表达，包括点的法向量，最近邻，特征直方图，快速特征直方图；</li>
+<li>第二个部分利用机器学习的方法来对点云进行模型分类；</li>
+<li>第三个部分是三个实验，第一个是将桌子上面的物体分类病抓取，第二个实验是实时鉴别门和门把手，第三个实验是实时slam。</li>
+</ol>
+<h1 id="系统结构">系统结构</h1>
+<ol>
+<li>点云输入</li>
+<li>寻找最近邻</li>
+<li>滤波—— 剔除外点  <ul>
+<li>根据最近邻剔除最近邻距离大于整体均值标准差的点<ul>
+<li>或者根据同时拍摄的两幅图像找对应位置的点，看点间的距离是否大于阈值</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>下采样</li>
+<li>法向量估计——PCA分析：协方差矩阵最小特征向量</li>
+<li>曲率估计——协方差矩阵的特征值之比</li>
+<li>特征直方图PFH<ul>
+<li>选取大于邻域范围的半径 建立范围内任意两点的局部坐标系和计算四元数  将所有的值投票简历直方图</li>
+</ul>
+</li>
+</ol>
+<ol>
+<li><p>快速特征直方图FPFH</p>
+<ul>
+<li>与PFH不同的是计算点的邻域的PFH加权，而不是邻域内的任意两点</li>
+</ul>
+</li>
+<li><p>多视图配准</p>
+<ul>
+<li>初始配准<pre><code>  -<span class="ruby"> 选择各自距离大于阈值的点，在目标图像中找<span class="constant">FPFH</span>近似的一组候选点
+</span>  -<span class="ruby"> 对<span class="constant">C</span>中的点求若干最优的匹配点对，打到寻找初始匹配点
+</span>  -<span class="ruby"> 利用这些点求得旋转和平移初始的矩阵
+</span>  -<span class="ruby"> 调用<span class="constant">ICP</span></span>
+</code></pre></li>
+<li>ICP配准：容易陷入局部收敛，迭代次数过多</li>
+</ul>
+</li>
+<li><p>下采样</p>
+<pre><code>-<span class="ruby"> 均匀密度：格子取点  
+</span>-<span class="ruby"> 弥补空洞：判断邻域内与某点的夹角序列，判断序列相邻值之差是否大于阈值</span>
+</code></pre></li>
+<li><p>聚类</p>
+<pre><code><span class="deletion">- 根据平面距离划分大区域</span>
+</code></pre></li>
+<li>寻找边界<pre><code><span class="deletion">- 通过点到直线距离拟合平面，根据曲率或者邻域夹角序列差判断边界</span>
+</code></pre></li>
+<li>分割<pre><code>-<span class="ruby"> 在聚类的基础上根据曲率和夹角变化进行更细致分割
+</span>-<span class="ruby">边界替代：在边界中随机取两点建立直线，判断和世界z轴平行垂直，最终用四点代替边界</span>
+</code></pre></li>
+<li>模型分类<ul>
+<li>启发式先验知识（第七章）<br>  判断物体平面  判断物体把手的位置  根据位置关系判断物体类别</li>
+<li>机器学习训练<br>  双层结构——确定家具和背景（第七章）<pre><code>  剔除水平面和垂直面地面和墙等    余下的点云分割——CRF学习方法
+  家具的分类            ——CRF学习
+  是为了在区域生长之后得到的物体数据来进行分类门、柜子、桌子等
+</code></pre>  学习桌面物体的表面（第八章）<pre><code>  <span class="literal">R1</span> 法向量估计的参数
+  <span class="literal">R2</span>  PFH的计算参数—— 参数的选择   PFH来辨别物体不受物体大小影响？
+      最优辨识力的特征选取——计算几何位置的平均PFH，计算所有点到mean的距离，根据距离形成的分布确定初始聚类中心，聚类确定最优特征点
+  是对每一个点进行训练和测试，得到每个点的几何位置
+  改进的方案：将SVM转换成CRF条件概率图算法和FPFH直方图
+</code></pre>  最终的GFPFH训练分类确定各个物体<pre><code>  修改FPFH权值，带有几何位置信息的点可以重建三角面片，确定抓取位置
+  利用每个类内的带有几何位置的点，训练SVM 分类成各个物体
+      利用八叉树数据结构得到全局的直方图来训练SVM 分类成各个物体
+</code></pre>  物体参数拟合和面片重建（第九章）<pre><code>  RANSAC拟合各个类别，识别形状  ，形状参数拟合后，它的周围的小的聚类可以看作是把手，最后进行三围重建。   最终物体的几何形状由参数形状构建，细小的把手等由外电进行三角面片重建。
+</code></pre></li>
+</ul>
+</li>
+</ol>
+<p>Q：<br>为什么要机器学习两种标签？<br>同一类物体也有很多种 ，需要有具体的点云所在几何位置的属性才能更好的重建。<br>8.1写的几何位置的学习，利用了PFH，8.2更改了算法，8.3写的物体整体分类的学习，用的GFPFH。</p>
+<h1 id="实验二">实验二</h1>
+<ul>
+<li>检测门和门把</li>
+</ul>
+<ul>
+<li>检测门——先验知识限定门高宽，边界方向和平面法相</li>
+<li>检测门把——在门的点云中分离</li>
+</ul>
+<ol>
+<li>分离距离门的平面大于阈值的点</li>
+<li>根据直方图分离与平面上的点相差较大的点</li>
+</ol>
+<ul>
+<li>将上述两种点合并进行重建 抓取</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2014-11-14T10:59:54.000Z"><a href="/2014/11/14/install-pcl-master-for-kinfu/">11月 14 2014</a></time>
       
       
@@ -251,7 +388,7 @@
   <h3 class="title">分类</h3>
   <ul class="entry">
   
-    <li><a href="/categories/Pcl/">Pcl</a><small>3</small></li>
+    <li><a href="/categories/Pcl/">Pcl</a><small>4</small></li>
   
     <li><a href="/categories/hexo/">hexo</a><small>2</small></li>
   
