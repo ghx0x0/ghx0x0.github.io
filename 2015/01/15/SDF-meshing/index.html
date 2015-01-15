@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>MLS平滑和Rusu的RMLS | GH‘s blog</title>
+  <title>SDF和marching cubes算法 | GH‘s blog</title>
   <meta name="author" content="GH">
   
-  <meta name="description" content="MLS是点云领域内比较重要，并且也是用的比较多的平滑方法，Pcl封装了MLS的函数并且可以利用MLS来估算点云的法向，在此基础上，Rusu曾提出更为鲁棒的RMLS算法，可以抑制在sharp边缘处被平滑成光滑的曲面。">
+  <meta name="description" content="SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="MLS平滑和Rusu的RMLS"/>
+  <meta property="og:title" content="SDF和marching cubes算法"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -52,25 +52,37 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-01-15T11:16:57.000Z"><a href="/2015/01/15/mls-intro/">1月 15 2015</a></time>
+        <time datetime="2015-01-15T11:34:05.000Z"><a href="/2015/01/15/SDF-meshing/">1月 15 2015</a></time>
       
       
   
-    <h1 class="title">MLS平滑和Rusu的RMLS</h1>
+    <h1 class="title">SDF和marching cubes算法</h1>
   
 
     </header>
     <div class="entry">
       
-        <p><img src="/img/QQ截图20150115193156.jpg" alt=""><br>MLS是点云领域内比较重要，并且也是用的比较多的平滑方法，Pcl封装了MLS的函数并且可以利用MLS来估算点云的法向，在此基础上，Rusu曾提出更为鲁棒的RMLS算法，可以抑制在sharp边缘处被平滑成光滑的曲面。 <a id="more"></a> </p>
-<h1 id="普通MLS算法">普通MLS算法</h1>
-<p>原始点云c    生成的曲面s<br>遍历c中每一点x，并且获取p点周围的邻域点集<br>拟合函数f(x)=∑ p(x)<em>a(x)<br>P(x)为设定好的阶次函数，a(x)为与x有关的函数<br>J=∑ w（x）</em>(f(x)-y)   求取最小，y为c中x对应的y值，f(x)为拟合的值，w为权重函数  </p>
-<p>依据此获取全局的a（x）函数<br>最终将所有的c中的x点拉至拟合的曲面s上，最终满足下式   </p>
-<p>  <img src="/img/111111.jpg" alt=""></p>
-<h1 id="Rusu的RMLS算法">Rusu的RMLS算法</h1>
-<p>和普通mls不同的是，在进行逼近拟合之前，需要进行参考面拟合，为了剔除外点，05年采用的是带权重的RANSAC进行参考面拟合，07年借鉴了前人的算法，采用了极大似然进行参考面的估计，之后剔除了外点，只用参考面上的进行mls拟合。<br>这样在边缘地带可以防止2个平面交界处平滑成曲面。  </p>
-<h1 id="附：MLS的参考">附：MLS的参考</h1>
-<p>  <img src="/img/2222222.jpg" alt=""><br>  <img src="/img/33333.jpg" alt=""><br>  <img src="/img/4444.jpg" alt=""><br>  <img src="/img/55555.jpg" alt=""></p>
+        <p><img src="/img/QQ截图20150115194014.jpg" alt=""><br>SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。   <a id="more"></a> </p>
+<h1 id="基本SDF框架：">基本SDF框架：</h1>
+<ol>
+<li>在三维空间构造体素，并对体素初始化为空；  </li>
+<li>将三维数据分配到体素中；  </li>
+<li>对体素各个顶点进行刷新：通过视点到该顶点的射线和该点附近的面片交与一点，顶点到该点的距离即为该点的D（x），w（x）通过计算该点周围面片定点的法向量和这条射线进行加权求得；  </li>
+<li>当心的数据获取后，将新数据的SDF和原始的SDF加权融合，即新的体素中顶点的d（x）和w（x）；  </li>
+<li>最终通过marching cubes 提取面片输出。  </li>
+</ol>
+<h1 id="填补空洞的SDF框架：">填补空洞的SDF框架：</h1>
+<ol>
+<li>在三维空间构造体素，并对体素初始化为unseen标志，体素顶点的D（x）设为最大Dmax；  </li>
+<li>将三维数据分配到体素中，分配的体素标志为varying；  </li>
+<li>对体素各个顶点进行刷新：通过视点到该顶点的射线和该点附近的面片交与一点，顶点到该点的距离即为该点的D（x），w（x）通过计算该点周围面片定点的法向量和这条射线进行加权求得；  </li>
+<li>对体素的状态进行刷新：从该交点到视点的直线所经过的体素更新标志为empty，顶点D（x）设为最小Dmin；  </li>
+<li>当心的数据获取后，将新数据的SDF和原始的SDF加权融合，即新的体素中顶点的d（x）和w（x），并更新体素的状态；</li>
+<li>最终通过marching cubes 提取面片输出。  </li>
+</ol>
+<p><a href="http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html#msAmb" target="_blank" rel="external">http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html#msAmb</a>    给出了marching cubes的官网，可以提取最终面片  。</p>
+<h1 id="Tips：">Tips：</h1>
+<p>1.采用什么数据结构，一个体素8个顶点，相邻的体素会有公用顶点，数据结构不仅减少内存，更对顶点状态的更新有帮助，仅通过一次更改即可对所有体素的该顶点状态更新；<br>2.Marching cubes存在奇异性，程序上需要对奇异状态的cubes进行互补求解，得到更好的面片。  </p>
 
       
     </div>
@@ -79,7 +91,7 @@
         
   
   <div class="categories">
-    <a href="/categories/Pcl/">Pcl</a>
+    <a href="/categories/三维重建/">三维重建</a>
   </div>
 
         
@@ -100,16 +112,14 @@
 
  <nav id="pagination" >
     
-    <a href="/2015/01/15/SDF-meshing/" class="alignleft prev" >上一页</a>
     
-    
-    <a href="/2014/12/30/NDT-match/" class="alignright next" >下一页</a>
+    <a href="/2015/01/15/mls-intro/" class="alignright next" >下一页</a>
     
     <div class="clearfix"></div>
 </nav>
 
 <section id="comment">
-  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/15/mls-intro/ data-title=MLS平滑和Rusu的RMLS data-url=/2015/01/15/mls-intro/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/15/SDF-meshing/ data-title=SDF和marching cubes算法 data-url=/2015/01/15/SDF-meshing/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
 </section>
 
 </div></div>
