@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>FPGA编程记录 | GH‘s blog</title>
+  <meta name="author" content="GH">
+  
+  <meta name="description" content="之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="FPGA编程记录"/>
+  <meta property="og:site_name" content="GH‘s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">GH‘s blog</a></h1>
+  <h2><a href="/">尚未被开垦的小帅哥</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">存档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-01-19T12:25:27.000Z"><a href="/2015/01/19/FPGA-first-intro-and-tips/">1月 19 2015</a></time>
+      
+      
+  
+    <h1 class="title">FPGA编程记录</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p> <img src="/img/光影魔术手拼图.jpg" alt=""><br>之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录    <a id="more"></a> </p>
+<h1 id="FPGA基本知识">FPGA基本知识</h1>
+<p>FPGA芯片是一种具有很多引脚的封装芯片。FPGA 内部主要三块：可编程的逻辑单元、可编程的连线和可编程的 IO 模块。我们开发FPGA芯片就是去对FPGA进行模块化设计。这就好比C语言中实现不同功能的各个封装好的类，其中有些类的输出是另外一些类的输入。但是与C变成所不同的是，FPGA的程序是所有模块同时运行的，而在传统的C编程中，不同的类和他们的成员函数是先后调用的，所以在对FPGA进行编程的时候是需要格外注意时序问题。  </p>
+<p>FPGA的内部电路是模块化的设计，一个FPGA芯片就是最顶层的模块，在他下面会有许多其他的模块，如图像编码解码模块，图像处理模块，SRAM读写模块等等，每个模块都具有若干输入端口和输出端口，一个模块的输入端口要么连接在上层模块的输入端口，要么连接在另一个同级模块的输出端口；最底层模块的内部由逻辑元件、存储元件和导线构成。  </p>
+<p>FPGA内的逻辑元件包括：与门、或门、非门、三态门、加法器、乘法器。<br>FPGA内的存储元件包括：触发器、RAM存储器。<br>相应地，FPGA内的信号分为两种：逻辑元件输出端的信号、存储元件输出端的信号。这些信号都是电平信号，取值只有两种：高电平、低电平。  </p>
+<p>逻辑元件输出端的信号会有毛刺。毛刺产生的原因是信号在导线上和逻辑元件内部进行传输时都要花费时间（以ns为单位）。例如，“与门”两个输入端上的信号到达时间总有个先后顺序，从而会在输出端上产生一个毛刺；只有当两个输入端上的信号都稳定下来时，输出端的信号才稳定下来；一旦输入端的信号发生变化，输出端又会产生毛刺。存储元件输出端的信号是高质量的信号，在发生变化时也不会有毛刺。因此，存储元件输出端的信号可以用来做时钟。  </p>
+<p>完全由逻辑元件（与门、或门、非门、三态门、加法器、乘法器）构成的电路，称为“组合逻辑电路”。具有寄存器的电路，称为“时序逻辑电路”。前面讲过，逻辑元件输出端的信号是有毛刺的。因此，组合逻辑电路的输出信号是有毛刺的。为了获得稳定的高质量信号，一般都将组合逻辑电路的输出信号打入寄存器保存起来，如下图所示。 </p>
+<p> <img src="/img/QQ截图20150119195025.jpg" alt=""></p>
+<p>上图就是一个简单的流水线结构。左边两个寄存器的输出信号通过组合逻辑电路运算（一般是加减乘除运算），得到的输出结果送到右边寄存器的输入端；三个寄存器使用同一个时钟信号。</p>
+<p>我们在设计时需要注意的是，组合逻辑电路的规模不能太庞大。如果把非常庞大的组合逻辑电路放到上图中，就会造成工作不正常。因为组合电路的延时过大，信号通过组合电路花费的时间过长，超过了1个时钟周期。左边两个寄存器输出端的数值在某个时钟上升沿发生更新之后，其新数值要通过组合逻辑电路的计算，才能给右边寄存器的数据输入端提供有效的新信号，如果组合逻辑电路的计算延时过大，这一过程就无法赶在下一个时钟上升沿到达右边寄存器时钟端之完成，从而在下一个时钟上升沿时刻右边寄存器取走的就不是正确的信号。</p>
+<h1 id="下面是笔者的一些个人记要，如有不对，欢迎批评指正。">下面是笔者的一些个人记要，如有不对，欢迎批评指正。</h1>
+<p>FPGA的编程语言分为Verilog和HDL两种语言，相对来说，Verilog对于熟悉C/C++的人来说更容易上手，笔者也是采用Verilog进行一些开发。  </p>
+<ol>
+<li><p>Verilog中对变量的声明一般有reg和wire两种，并且需要声明input和output类型。如图所示。reg是寄存器，这种变量时延一个时钟clk，而wire则是导线，不存在任何时延，即直接输出。Input/output后不加reg或wire则默认为1位的寄存器类型。此外还有interge类型，整型信号用32位的寄存器来存储，按照补码将其解释为一个整数。</p>
+<p><img src="/img/QQ截图20150119195438.jpg" alt=""></p>
+</li>
+<li><p>上述代码，always @(posedge CLK) 表示，“每当时钟LLC的上升沿到来时，执行下述操作”。always和posedge都是语法关键字，always表示“每当”，posedge表示“上升沿”。always @(posedge CLK)后面只能跟一条语句，在这里就是一个if-else语句。（请注意，if-else语句在语法上是一条语句。）如果有很多语句，那么应该用begin-end括起来。Assign也是语法关键字，是将变量进行相连，可以理解为C中的赋值。 </p>
+<p><img src="/img/QQ截图20150119203844.jpg" alt=""><br><img src="/img/QQ截图20150119195501.jpg" alt=""></p>
+</li>
+<li><p>FPGA中的模块的实例一般需要额外开辟一个文件，对模块进行描述或定义，在对其引用的模块文件进行必要的声明，如上图所示。<br>上图是模块自身的定义文件GH_Binary.v， 下图是引用该模块的上层模块image_processing.v，需要对其进行声明并调用，括号前是子模块所定义的变量名，括号中是传入进去的上层模块变量。<br><img src="/img/QQ截图20150119195540.jpg" alt=""><br><img src="/img/QQ截图20150119195606.jpg" alt=""></p>
+</li>
+<li><p>FPGA中对图像数据进行实时处理一般需要对变量进行缓存，当变量较少的情况下可以自己手动代码进行缓存，当变量较多的情况下需要利用开发环境Quartus帮助我们生成移位缓存器。在Quartus II 9.0 Tools→MegaWizard Plug-In Manager调出如图所示的界面，选择其中Memory Compiler下的Shift register (RAM-based)，然后在“What name do you want for the output file?”下面框内路径的最右端加上你要为这个模块取的名称，例如取名为test。然后点“Next&gt;”，进入下图所示界面。按照图中的参数设置好后，点击“Next&gt;”，一直“Next&gt;”下去，最后点击“Finish”。至此，FPGA工程中就创建了一个移位缓存器。其中1表示数据的宽度，因为是黑白二值图像，仅1位就足够表示要缓存40个数据，下面的640代表图像的宽度，图像分辨率为640*480，所以一行的宽度是640，缓存的数据是图像上同一列的40个数据。<br><img src="/img/QQ截图20150119200207.jpg" alt=""><br><img src="/img/QQ截图20150119200151.jpg" alt=""></p>
+</li>
+<li><p>此外，FPGA中也可以利用Quartus生成读写操作的FIFO缓存。FIFO的实现，创建步骤与创建基于RAM的移位缓存器类似，也要首先在MegaWizard界面下操作（Tools→MegaWizard Plug-In Manager）；在下图的窗口中，要选择“FIFO”。FIFO中的宽度和深度决定的FIFO的大小和缓存数据的多少。<br><img src="/img/QQ截图20150119200313.jpg" alt=""></p>
+</li>
+<li><p>当写完FPGA程序后，需要在Quartus的 settings中需要把自己的程序文件添加到其中，如上图所示，一般情况下，当打开的工程和更改的工程是一个时，Quartus会自动添加新建的文件模块等。<br><img src="/img/QQ截图20150119200704.jpg" alt=""></p>
+</li>
+<li><p>对FPGA进行程序的调试相对来说最为麻烦，对于熟悉了C/C++单步调试的人来说，FPGA是不存在单步调试的。想要调试FPGA只能从SignalTap入手，SignalTap可以再程序运行时，实时的反馈给我们变量的时钟脉冲，我们只能根据脉冲图来判断，从而一步步最终到错误之处。SignalTap需要先对程序进行编译，之后进行设置，在设置的过程中记得选择出发使能和触发条件，如下图1和2，设置好观察的变量之后，记得在右侧的选项中选择时钟CLK，如图3，之后需要在settings中打开SignalTap，并再次进行编译，如图4。最后将程序下载到FPGA中运行，此时先观看右侧图3的JTAG chain config是否有设备（笔者曾经忘记这个导致找bug找了很长时间都没找到= =），然后观看data中的数据脉冲图是否与理想的一致，并追查问题。<br><img src="/img/QQ截图20150119201149.jpg" alt=""><br><img src="/img/QQ截图20150119201554.jpg" alt=""><br><img src="/img/QQ截图20150119201618.jpg" alt=""><br><img src="/img/QQ截图20150119201351.jpg" alt=""></p>
+</li>
+</ol>
+<h1 id="Tips：">Tips：</h1>
+<ol>
+<li>FPGA中if判断语句不算作寄存器,只是逻辑运算电路,故没有时延。  </li>
+<li>FPGA中对sram的写操作,地址都是正常的DSP地址除以2所得。  </li>
+<li>DSP地址是8位的,FPGA是16位的,dsp对char写时,第一个字节写入,但是还是会占用第二个字节,是个空字节,所以DSP的地址永远是FPGA的地址的2倍。  </li>
+<li>写坐标(harris和circle)的fifo中，flag_1c是为了和row和col时钟对齐，因为col和row是个reg，所以会延时1个clk，所以把flag_1c&lt;=flag。  </li>
+<li>DSP中加入计时器,在系统STS里加入变量,在images_and_keypoints里加入声明，最后在文件中加入STS.H头文件，否则编译不成功。  </li>
+</ol>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/嵌入式/">嵌入式</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/FPGA/">FPGA</a>, <a href="/tags/DSP/">DSP</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    
+    <a href="/2015/01/15/SDF-meshing/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/19/FPGA-first-intro-and-tips/ data-title=FPGA编程记录 data-url=/2015/01/19/FPGA-first-intro-and-tips/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/baidu" method="get" accept-charset="utf-8">
+    <input type="search" name="word" results="0" placeholder="搜索">
+    <input type="hidden" name="si" value="">
+    <input name=tn type=hidden value="bds">
+	<input name=cl type=hidden value="3">
+	<input name=ct type=hidden value="2097152">
+	<input name=s type=hidden value="on">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/DSP/">DSP</a><small>0</small></li>
+  
+    <li><a href="/categories/FPGA/">FPGA</a><small>0</small></li>
+  
+    <li><a href="/categories/FPGA-DSP/">FPGA , DSP</a><small>0</small></li>
+  
+    <li><a href="/categories/Pcl/">Pcl</a><small>5</small></li>
+  
+    <li><a href="/categories/hexo/">hexo</a><small>2</small></li>
+  
+    <li><a href="/categories/三维配准/">三维配准</a><small>1</small></li>
+  
+    <li><a href="/categories/三维重建/">三维重建</a><small>1</small></li>
+  
+    <li><a href="/categories/嵌入式/">嵌入式</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/DSP/" style="font-size: 12.50px;">DSP</a><a href="/tags/FPGA/" style="font-size: 12.50px;">FPGA</a><a href="/tags/Pcl/" style="font-size: 20.00px;">Pcl</a><a href="/tags/github/" style="font-size: 12.50px;">github</a><a href="/tags/hexo/" style="font-size: 15.00px;">hexo</a><a href="/tags/hexo，github/" style="font-size: 10.00px;">hexo，github</a><a href="/tags/三维/" style="font-size: 17.50px;">三维</a><a href="/tags/嵌入式/" style="font-size: 10.00px;">嵌入式</a>
+  </div>
+</div>
+
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 GH
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
+<a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
