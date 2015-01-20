@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>NDT 算法（与ICP对比）和一些常见配准算法 | GH‘s blog</title>
+  <title>原创————NDT 算法（与ICP对比）和一些常见配准算法 | GH‘s blog</title>
   <meta name="author" content="GH">
   
   <meta name="description" content="目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="NDT 算法（与ICP对比）和一些常见配准算法"/>
+  <meta property="og:title" content="原创————NDT 算法（与ICP对比）和一些常见配准算法"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -56,7 +56,7 @@
       
       
   
-    <h1 class="title">NDT 算法（与ICP对比）和一些常见配准算法</h1>
+    <h1 class="title">原创————NDT 算法（与ICP对比）和一些常见配准算法</h1>
   
 
     </header>
@@ -157,6 +157,8 @@ ICP耗时多，容易陷入局部最优；
 
 可以根据格子cell的<span class="keyword">PDF</span>的协方差矩阵计算特征向量特征值，每个格子有球形状、平面、线型三种类型，根据朝向作以统计，得到局部或者一幅图像的特征直方图  
 </code></pre><p>文章来自于Martin Magnusson的The Three-Dimensional Normal-Distributions Transform— an Efficient Representation for Registration,Surface Analysis, and Loop Detection。 作者详细介绍了NDT在各个条件下的配准效果及与其他配准方法的详细实验对比，并利用NDT算法配准矿洞内三维场景，同时完成SLAM任务。<br><img src="/img/QQ截图20141230213819.jpg" alt=""><br><img src="/img/QQ截图20141230213609.jpg" alt=""></p>
+<h1 id="原创博文">原创博文</h1>
+<h1 id="转载请注明出处">转载请注明出处</h1>
 
       
     </div>
@@ -195,7 +197,7 @@ ICP耗时多，容易陷入局部最优；
 </nav>
 
 <section id="comment">
-  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2014/12/30/NDT-match/ data-title=NDT 算法（与ICP对比）和一些常见配准算法 data-url=/2014/12/30/NDT-match/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2014/12/30/NDT-match/ data-title=原创————NDT 算法（与ICP对比）和一些常见配准算法 data-url=/2014/12/30/NDT-match/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
 </section>
 
 </div></div>
