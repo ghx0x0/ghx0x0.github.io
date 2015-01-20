@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>SDF和marching cubes算法 | GH‘s blog</title>
+  <title>原创————SDF和marching cubes算法 | GH‘s blog</title>
   <meta name="author" content="GH">
   
   <meta name="description" content="SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="SDF和marching cubes算法"/>
+  <meta property="og:title" content="原创————SDF和marching cubes算法"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -56,7 +56,7 @@
       
       
   
-    <h1 class="title">SDF和marching cubes算法</h1>
+    <h1 class="title">原创————SDF和marching cubes算法</h1>
   
 
     </header>
@@ -82,7 +82,9 @@
 </ol>
 <p><a href="http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html#msAmb" target="_blank" rel="external">http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html#msAmb</a>    给出了marching cubes的官网，可以提取最终面片  。</p>
 <h1 id="Tips：">Tips：</h1>
-<p>1.采用什么数据结构，一个体素8个顶点，相邻的体素会有公用顶点，数据结构不仅减少内存，更对顶点状态的更新有帮助，仅通过一次更改即可对所有体素的该顶点状态更新；<br>2.Marching cubes存在奇异性，程序上需要对奇异状态的cubes进行互补求解，得到更好的面片。  </p>
+<p>1.采用什么数据结构，一个体素8个顶点，相邻的体素会有公用顶点，数据结构不仅减少内存，更对顶点状态的更新有帮助，仅通过一次更改即可对所有体素的该顶点状态更新；<br>2.Marching cubes存在奇异性，程序上需要对奇异状态的cubes进行互补求解，得到更好的面片。    </p>
+<h1 id="原创博文">原创博文</h1>
+<h1 id="转载请注明出处">转载请注明出处</h1>
 
       
     </div>
@@ -121,7 +123,7 @@
 </nav>
 
 <section id="comment">
-  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/15/SDF-meshing/ data-title=SDF和marching cubes算法 data-url=/2015/01/15/SDF-meshing/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/15/SDF-meshing/ data-title=原创————SDF和marching cubes算法 data-url=/2015/01/15/SDF-meshing/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
 </section>
 
 </div></div>

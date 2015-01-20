@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>FPGA编程记录 | GH‘s blog</title>
+  <title>原创————FPGA编程记录 | GH‘s blog</title>
   <meta name="author" content="GH">
   
   <meta name="description" content="之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="FPGA编程记录"/>
+  <meta property="og:title" content="原创————FPGA编程记录"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -56,7 +56,7 @@
       
       
   
-    <h1 class="title">FPGA编程记录</h1>
+    <h1 class="title">原创————FPGA编程记录</h1>
   
 
     </header>
@@ -100,6 +100,8 @@
 <li>写坐标(harris和circle)的fifo中，flag_1c是为了和row和col时钟对齐，因为col和row是个reg，所以会延时1个clk，所以把flag_1c&lt;=flag。  </li>
 <li>DSP中加入计时器,在系统STS里加入变量,在images_and_keypoints里加入声明，最后在文件中加入STS.H头文件，否则编译不成功。  </li>
 </ol>
+<h1 id="原创博文">原创博文</h1>
+<h1 id="转载请注明出处">转载请注明出处</h1>
 
       
     </div>
@@ -136,7 +138,7 @@
 </nav>
 
 <section id="comment">
-  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/19/FPGA-first-intro-and-tips/ data-title=FPGA编程记录 data-url=/2015/01/19/FPGA-first-intro-and-tips/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/01/19/FPGA-first-intro-and-tips/ data-title=原创————FPGA编程记录 data-url=/2015/01/19/FPGA-first-intro-and-tips/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
 </section>
 
 </div></div>
