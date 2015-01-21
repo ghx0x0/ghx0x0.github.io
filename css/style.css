@@ -638,6 +638,13 @@ article footer .addthis iframe {
   margin-right: 10px;
   display: inline-block;
 }
+#sidebar .recent_posts .entry {
+  padding-right: 5px;
+}
+#sidebar .recent_posts a {
+  margin-right: 10px;
+  display: inline-block;
+}
 #footer {
   color: #999;
   margin-bottom: 50px;
