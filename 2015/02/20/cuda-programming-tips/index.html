@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Pcl | GH‘s blog</title>
+  <title>原创————CUDA 编程知识点 | GH‘s blog</title>
   <meta name="author" content="GH">
+  
+  <meta name="description" content="Cuda中对内核函数的调用&amp;lt;&amp;lt;&amp;lt; m , n &amp;gt;&amp;gt;&amp;gt;，m表示线程块的个数，n表示每个线程块的线程数，m个线程块构成一个线程格。M和n可以是一维的或者二维（三维）的，即使n是一维的，那么m也可以是二维的。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="原创————CUDA 编程知识点"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -194,73 +196,89 @@
 </nav>
 <div class="clearfix"></div></header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title category">Pcl</h2>
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-20T11:10:25.000Z"><a href="/2015/02/20/cuda-programming-tips/">2月 20 2015</a></time>
+      
+      
+  
+    <h1 class="title">原创————CUDA 编程知识点</h1>
+  
 
+    </header>
+    <div class="entry">
+      
+        <ol>
+<li><p>Cuda中对内核函数的调用&lt;&lt;&lt; m , n &gt;&gt;&gt;，m表示线程块的个数，n表示每个线程块的线程数，m个线程块构成一个线程格。M和n可以是一维的或者二维（三维）的，即使n是一维的，那么m也可以是二维的。<a id="more"></a></p>
+</li>
+<li><p>共享内存对于每个线程块创建一个副本，但是共享内存对于所有的线程块中的线程都是相同的。</p>
+</li>
+<li><p>线程同步语句-syncthreads()在cuda的架构中，cuda会确保所有的线程都执行完同步才会继续往下执行，因此当线程发散，有些线程同步而有些不同步时那么gpu程序会一直挂起直到程序崩溃。</p>
+</li>
+<li><p>Cudamemcpy（）是直接把cpu的内存传输到gpu上，成为全局内存。而cudamemcpytosymbol则是把cpu数据直接拷贝到gpu上，成为常量内存。常量内存当直接使用变量名而不是数组时，底层的汇编代码可以看到，其速度往往更快，因为直接使用变量名不再需要根据数组的首地址在进行偏移得到数据，而是可以直接在编译的过程中根据变量名将其转换为数字字面值。所以，在较新的2.0计算能力的显卡上，全局内存借助一级缓存也能达到和常量内存使用数组进行运算的速度。<br>使用常量内存的一个判断诀窍： 对数据的计算不需要依赖threadIdx等。</p>
+</li>
+<li><p>利用cudaeventrecord来记录的gpu执行时间，在起始和结束之间只能留有gpu代码，而不能是gpu和cpu的混合代码，否则会发生错误。</p>
+</li>
+<li><p>纹理内存对于具有空间结构性的内存读取具有较大的帮助，比如图像求取四邻域等，可以直接利用一维的纹理函数进行读取。此外一个比较有用的就是利用纹理进行低分辨率的线性插值。当使用二维纹理读取内存时，当读取环绕周围的像素，即使是边界像素或边界外像素也可以自动更改为边界处的数据，而使用一维的纹理内存则需要自己编写代码做边界和边界外的处理。二者不同之处在于纹理内存的声明和绑定这两处，在最终的释放资源解绑定则是相同的。</p>
+</li>
+<li><p>当使用原子操作时，最好多考虑最大利用共享内存，一方面可以减少原子操作概率形成串行读取全局内存而导致的延迟，另一方面也能充分利用共享内存的高速传输速率。</p>
+</li>
+<li><p>Gpu的多线程指的是大量数据执行同一个相同的任务，而cuda中的流则是指明任务并行性，即同时执行不同的任务。</p>
+</li>
+<li><p>锁页内存可以减少GPU读取主机内存的传输时间，保证DMA直接访问的最大速度，但是所有的内存分配如果都使用锁页内存的话将使主机很快耗尽内存。一般情况下，对源数据内存和目标内存分配锁页内存。</p>
+</li>
+<li><p>Cuda中对流的编写应该采用宽度优先的方式，而非深度优先的方式，即内存复制操作轮训一遍所有的流，然后再核函数一遍所有的流。因为cuda对流的调度总是要等当前流的上一次操作执行完后才能继续，这样宽度交叉执行就能避免同一个流上形成的串行执行。流的内存分配应该用锁页内存，内存复制应该用cudamemcpyAsync而不是cudamemcpy。</p>
+</li>
+<li><p>零拷贝内存具有和锁页内存一样的特点，即是固定的不可移走的内存。此外，他还是直接分配在设备上的内存，不需要从主机拷贝到设备，可以在主机上声明分配，并直接被设备访问，因此成为零拷贝内存。</p>
+</li>
+<li><p>Nsight可以单点调试vs的程序中的核函数部分，而生成的exe可以通过visual profiler可视化分析各部分性能。</p>
+</li>
+</ol>
 
-  <div class="archive">
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2015-01-15T11:16:57.000Z"><a href="/2015/01/15/mls-intro/">1月 15 2015</a></time>
-            
-              <h1 class="title"><a href="/2015/01/15/mls-intro/">原创————MLS平滑和Rusu的RMLS</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-12-30T11:46:53.000Z"><a href="/2014/12/30/rusu-doctor-paper/">12月 30 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/12/30/rusu-doctor-paper/">原创————Rusu 博士论文记录</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-14T10:59:54.000Z"><a href="/2014/11/14/install-pcl-master-for-kinfu/">11月 14 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/14/install-pcl-master-for-kinfu/">原创————安装带有kinfu的测试版本PCL</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-14T09:19:09.000Z"><a href="/2014/11/14/install-pcl1-7-1/">11月 14 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/14/install-pcl1-7-1/">原创————Pcl开源库1.7.1版本的安装</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-12T09:22:21.000Z"><a href="/2014/11/12/pcl-intro/">11月 12 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/12/pcl-intro/">PCL点云库（Point Cloud Library）简介</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/cuda/">cuda</a>
   </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/cuda/">cuda</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    <a href="/2015/02/20/cuda-how-to-set-threads-blocks/" class="alignleft prev" >上一页</a>
+    
+    
+    <a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/02/20/cuda-programming-tips/ data-title=原创————CUDA 编程知识点 data-url=/2015/02/20/cuda-programming-tips/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
 </div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">

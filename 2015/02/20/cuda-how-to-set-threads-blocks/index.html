@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Pcl | GH‘s blog</title>
+  <title>原创————CUDA中对线程块的设置 | GH‘s blog</title>
   <meta name="author" content="GH">
+  
+  <meta name="description" content="尽量满足每个sm上面的最大线程数。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="原创————CUDA中对线程块的设置"/>
   <meta property="og:site_name" content="GH‘s blog"/>
 
   
@@ -194,73 +196,73 @@
 </nav>
 <div class="clearfix"></div></header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title category">Pcl</h2>
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-20T11:10:47.000Z"><a href="/2015/02/20/cuda-how-to-set-threads-blocks/">2月 20 2015</a></time>
+      
+      
+  
+    <h1 class="title">原创————CUDA中对线程块的设置</h1>
+  
 
+    </header>
+    <div class="entry">
+      
+        <ol>
+<li><p>尽量满足每个sm上面的最大线程数。<a id="more"></a></p>
+</li>
+<li><p>每个sm支持的线程块有上限，所以每个线程块的线程数不能太少，并且最好为32或16的倍数。</p>
+</li>
+<li><p>当一个sm中的Block的所有线程形成阻塞（同步或者等待）时，相应的SM会闲置导致效率下滑。通常让block的数目是sm的2倍以上，方便sm对其进行调度，使其在时间轴上重叠来提高利用率。</p>
+</li>
+<li><p>对每个线程块进行设置时，如果使用了寄存器，需要明确每个线程最大支持的寄存器个数，防止因为每个线程使用过多寄存器而导致每个时刻SM所能处理的线程数急剧下降。</p>
+</li>
+<li><p>当一维的线程块不足以满足计算需求或是在处理图像等二维数据时，可以使用二维线程块。</p>
+</li>
+</ol>
 
-  <div class="archive">
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2015-01-15T11:16:57.000Z"><a href="/2015/01/15/mls-intro/">1月 15 2015</a></time>
-            
-              <h1 class="title"><a href="/2015/01/15/mls-intro/">原创————MLS平滑和Rusu的RMLS</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-12-30T11:46:53.000Z"><a href="/2014/12/30/rusu-doctor-paper/">12月 30 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/12/30/rusu-doctor-paper/">原创————Rusu 博士论文记录</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-14T10:59:54.000Z"><a href="/2014/11/14/install-pcl-master-for-kinfu/">11月 14 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/14/install-pcl-master-for-kinfu/">原创————安装带有kinfu的测试版本PCL</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-14T09:19:09.000Z"><a href="/2014/11/14/install-pcl1-7-1/">11月 14 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/14/install-pcl1-7-1/">原创————Pcl开源库1.7.1版本的安装</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2014-11-12T09:22:21.000Z"><a href="/2014/11/12/pcl-intro/">11月 12 2014</a></time>
-            
-              <h1 class="title"><a href="/2014/11/12/pcl-intro/">PCL点云库（Point Cloud Library）简介</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/cuda/">cuda</a>
   </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/cuda/">cuda</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    
+    <a href="/2015/02/20/cuda-programming-tips/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/02/20/cuda-how-to-set-threads-blocks/ data-title=原创————CUDA中对线程块的设置 data-url=/2015/02/20/cuda-how-to-set-threads-blocks/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
 </div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">

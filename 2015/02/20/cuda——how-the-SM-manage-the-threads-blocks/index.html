@@ -1,0 +1,377 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>原创————CUDA中SM对线程块的调度 | GH‘s blog</title>
+  <meta name="author" content="GH">
+  
+  <meta name="description" content="sm流处理器簇对blocks的调度策略
+在cuda中，GPU中的SM（GTX650M有2个sm处理器）被GPU调度器把线程块逐个分配到SM上，每个SM同时处理这个被分配的线程块，但是每次每个时刻都只能处理一个warp线程束，由于有时会存在内存读取等操作导致等待，那么SM会转而处理其他的warp来掩盖这个延迟。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="原创————CUDA中SM对线程块的调度"/>
+  <meta property="og:site_name" content="GH‘s blog"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">GH‘s blog</a></h1>
+  <h2><a href="/">尚未被开垦的小帅哥</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">存档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+	<li> <a title="把这个链接拖到你的Chrome收藏夹工具栏中" href='javascript:(function() {
+	function c() {
+		var e = document.createElement("link");
+		e.setAttribute("type", "text/css");
+		e.setAttribute("rel", "stylesheet");
+		e.setAttribute("href", f);
+		e.setAttribute("class", l);
+		document.body.appendChild(e)
+	}
+ 
+	function h() {
+		var e = document.getElementsByClassName(l);
+		for (var t = 0; t < e.length; t++) {
+			document.body.removeChild(e[t])
+		}
+	}
+ 
+	function p() {
+		var e = document.createElement("div");
+		e.setAttribute("class", a);
+		document.body.appendChild(e);
+		setTimeout(function() {
+			document.body.removeChild(e)
+		}, 100)
+	}
+ 
+	function d(e) {
+		return {
+			height : e.offsetHeight,
+			width : e.offsetWidth
+		}
+	}
+ 
+	function v(i) {
+		var s = d(i);
+		return s.height > e && s.height < n && s.width > t && s.width < r
+	}
+ 
+	function m(e) {
+		var t = e;
+		var n = 0;
+		while (!!t) {
+			n += t.offsetTop;
+			t = t.offsetParent
+		}
+		return n
+	}
+ 
+	function g() {
+		var e = document.documentElement;
+		if (!!window.innerWidth) {
+			return window.innerHeight
+		} else if (e && !isNaN(e.clientHeight)) {
+			return e.clientHeight
+		}
+		return 0
+	}
+ 
+	function y() {
+		if (window.pageYOffset) {
+			return window.pageYOffset
+		}
+		return Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+	}
+ 
+	function E(e) {
+		var t = m(e);
+		return t >= w && t <= b + w
+	}
+ 
+	function S() {
+		var e = document.createElement("audio");
+		e.setAttribute("class", l);
+		e.src = i;
+		e.loop = false;
+		e.addEventListener("canplay", function() {
+			setTimeout(function() {
+				x(k)
+			}, 500);
+			setTimeout(function() {
+				N();
+				p();
+				for (var e = 0; e < O.length; e++) {
+					T(O[e])
+				}
+			}, 15500)
+		}, true);
+		e.addEventListener("ended", function() {
+			N();
+			h()
+		}, true);
+		e.innerHTML = " <p>If you are reading this, it is because your browser does not support the audio element. We recommend that you get a new browser.</p> <p>";
+		document.body.appendChild(e);
+		e.play()
+	}
+ 
+	function x(e) {
+		e.className += " " + s + " " + o
+	}
+ 
+	function T(e) {
+		e.className += " " + s + " " + u[Math.floor(Math.random() * u.length)]
+	}
+ 
+	function N() {
+		var e = document.getElementsByClassName(s);
+		var t = new RegExp("\\b" + s + "\\b");
+		for (var n = 0; n < e.length; ) {
+			e[n].className = e[n].className.replace(t, "")
+		}
+	}
+ 
+	var e = 30;
+	var t = 30;
+	var n = 350;
+	var r = 350;
+	var i = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+	var s = "mw-harlem_shake_me";
+	var o = "im_first";
+	var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
+	var a = "mw-strobe_light";
+	var f = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+	var l = "mw_added_css";
+	var b = g();
+	var w = y();
+	var C = document.getElementsByTagName("*");
+	var k = null;
+	for (var L = 0; L < C.length; L++) {
+		var A = C[L];
+		if (v(A)) {
+			if (E(A)) {
+				k = A;
+				break
+			}
+		}
+	}
+	if (A === null) {
+		console.warn("Could not find a node of the right size. Please try a different page.");
+		return
+	}
+	c();
+	S();
+	var O = [];
+	for (var L = 0; L < C.length; L++) {
+		var A = C[L];
+		if (v(A)) {
+			O.push(A)
+		}
+	}
+})()    '>摇一摇</a> </li>
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-20T10:38:39.000Z"><a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/">2月 20 2015</a></time>
+      
+      
+  
+    <h1 class="title">原创————CUDA中SM对线程块的调度</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h1 id="sm流处理器簇对blocks的调度策略">sm流处理器簇对blocks的调度策略</h1>
+<p>在cuda中，GPU中的SM（GTX650M有2个sm处理器）被GPU调度器把线程块逐个分配到SM上，每个SM同时处理这个被分配的线程块，但是每次每个时刻都只能处理一个warp线程束，由于有时会存在内存读取等操作导致等待，那么SM会转而处理其他的warp来掩盖这个延迟。<a id="more"></a>并且这些warp不一定都是在同一个线程块内的，另之所以每次同时处理多个block而不是只处理一个block并把该block内的线程个数设置成支持的最大的线程个数，一是可以允许其在支持不同线程个数的不同型号的显卡上都能处理相同的程序；二是由于gpu并行运算一般存在成千上万个线程，并且线程块个数远远大于SM，所以不会存在同一个SM内的线程块几乎同时执行完毕，而最终执行最后一个被调度的线程块而造成等待时间大于之前sm执行的时间所导致的效率低下。</p>
+<h1 id="附录1：">附录1：</h1>
+<p>　　GPU线程以网格（grid）的方式组织，而每个网格中又包含若干个线程块，在G80/GT200系列中，每一个线程块最多可包含512个线程，Fermi架构中每个线程块支持高达1536个线程。同一线程块中的众多线程拥有相同的指令地址，不仅能够并行执行，而且能够通过共享存储器（Shared memory）和栅栏（barrier）实现块内通信。这样，同一网格内的不同块之间存在不需要通信的粗粒度并行，而一个块内的线程之间又形成了允许通信的细粒度并行。这些就是CUDA的关键特性：线程按照粗粒度的线程块和细粒度的线程两个层次进行组织、在细粒度并行的层次通过共享存储器和栅栏同步实现通信，这就是CUDA的双层线程模型。<br>　　在执行时，GPU的任务分配单元（global block scheduler）将网格分配到GPU芯片上。启动CUDA 内核时，需要将网格信息从CPU传输到GPU。任务分配单元根据这些信息将块分配到SM上。任务分配单元使用的是轮询策略：轮询查看SM是否还有足够的资源来执行新的块，如果有则给SM分配一个新的块，如果没有则查看下一个SM。决定能否分配的因素有：每个块使用的共享存储器数量，每个块使用的寄存器数量，以及其它的一些限制条件。任务分配单元在SM的任务分配中保持平衡，但是程序员可以通过更改块内线程数，每个线程使用的寄存器数和共享存储器数来隐式的控制，从而保证SM之间的任务均衡。任务以这种方式划分能够使程序获得了可扩展性：由于每个子问题都能在任意一个SM上运行，CUDA程序在核心数量不同的处理器上都能正常运行，这样就隐藏了硬件差异。<br>　　对于程序员来说，他们需要将任务划分为互不相干的粗粒度子问题(最好是易并行计算)，再将每个子问题划分为能够使用线程处理的问题。同一线程块中的线程开始于相同的指令地址，理论上能够以不同的分支执行。但实际上，在块内的分支因为SM构架的原因被大大限制了。内核函数实质上是以块为单位执行的。同一线程块中的线程需要SM中的共享存储器共享数据，因此它们必须在同一个SM中发射。线程块中的每一个线程被发射到一个SP上。任务分配单元可以为每个SM分配最多8个块。而SM中的线程调度单元又将分配到的块进行细分，将其中的线程组织成更小的结构，称为线程束（warp）。在CUDA中，warp对程序员来说是透明的，它的大小可能会随着硬件的发展发生变化，在当前版本的CUDA中，每个warp是由32个线程组成的。SM中一条指令的延迟最小为4个指令周期。8个SP采用了发射一次指令，执行4次的流水线结构。所以由32个线程组成的Warp是CUDA程序执行的最小单位，并且同一个warp是严格串行的，因此在warp内是无须同步的。在一个SM中可能同时有来自不同块的warp。当一个块中的warp在进行访存或者同步等高延迟操作时，另一个块可以占用SM中的计算资源。这样，在SM内就实现了简单的乱序执行。不同块之间的执行没有顺序，完全并行。无论是在一次只能处理一个线程块的GPU上,还是在一次能处理数十乃至上百个线程块的GPU上，这一模型都能很好的适用。</p>
+<h1 id="附录2：">附录2：</h1>
+<p><strong>硬件基本架构</strong>　　实际上在 nVidia 的 GPU 里，最基本的处理单元是所谓的 SP(Streaming Processor)，而一颗 nVidia 的 GPU 里，会有非常多的 SP 可以同时做计算;而数个 SP 会在附加一些其他单元，一起组成一个 SM(Streaming Multiprocessor)。几个 SM 则会在组成所谓的 TPC(Texture Processing Clusters)。<br>　　在 G80/G92 的架构下，总共会有 128 个 SP，以 8 个 SP 为一组，组成 16 个 SM，再以两个 SM 为一个 TPC，共分成 8 个 TPC 来运作。而在新一代的 GT200 里，SP 则是增加到 240 个，还是以 8 个 SP 组成一个 SM，但是改成以 3 个 SM 组成一个 TPC，共 10 组 TPC。下面则是提供了两种不同表示方式的示意图。(可参考《NVIDIA G92终极状态!!》、《NVIDIA D10U绘图核心》)</p>
+<p><strong>对应到 CUDA</strong><br>　　而在 CUDA 中，应该是没有 TPC 的那一层架构，而是只要根据 GPU 的 SM、SP 的数量和资源来调整就可以了。<br>　　如果把 CUDA 的 Grid - Block - Thread 架构对应到实际的硬件上的话，会类似对应成 GPU - Streaming Multiprocessor - Streaming Processor;一整个 Grid 会直接丢给 GPU 来执行，而 Block 大致就是对应到 SM，thread 则大致对应到 SP。当然，这个讲法并不是很精确，只是一个简单的比喻而已。</p>
+<p><strong>SM 中的 Warp 和 Block</strong><br>　　CUDA 的 device 实际在执行的时候，会以 Block 为单位，把一个个的 block 分配给 SM 进行运算;而 block 中的 thread，又会以「warp」为单位，把 thread 来做分组计算。目前 CUDA 的 warp 大小都是 32，也就是 32 个 thread 会被群组成一个 warp 来一起执行;同一个 warp 里的 thread，会以不同的数据，执行同样的指令。此外，在 Compute Capability 1.2 的硬件中，还加入了 warp vote 的功能，可以快速的进行 warp 内的简单统计。<br>　　基本上 warp 分组的动作是由 SM 自动进行的，会以连续的方式来做分组。比如说如果有一个 block 里有 128 个 thread 的话，就会被分成四组 warp，第 0-31 个 thread 会是 warp 1、32-63 是 warp 2、64-95 是 warp 3、96-127 是 warp 4。<br>　　而如果 block 里面的 thread 数量不是 32 的倍数，那他会把剩下的 thread 独立成一个 warp;比如说 thread 数目是 66 的话，就会有三个 warp：0-31、32-63、64-65。由于最后一个 warp 里只剩下两个 thread，所以其实在计算时，就相当于浪费了 30 个 thread 的计算能力;这点是在设定 block 中 thread 数量一定要注意的事!<br>　　一个 SM 一次只会执行一个 block 里的一个 warp，但是 SM 不见得会一次就把这个 warp 的所有指令都执行完;当遇到正在执行的 warp 需要等待的时候(例如存取 global memory 就会要等好一段时间)，就切换到别的 warp 来继续做运算，藉此避免为了等待而浪费时间。所以理论上效率最好的状况，就是在 SM 中有够多的 warp 可以切换，让在执行的时候，不会有「所有 warp 都要等待的情形发生;因为当所有的 warp 都要等待时，就会变成 SM 无事可做的状况了～<br>　　下图就是一个 warp 排程的例子。一开始是先执行 thread block 1 的 warp1，而当他执行到第六行指令的时候，因为需要等待，所以就会先切到 thread block 的 warp2 来执行;一直等到存取结束，且刚好有一个 warp 结束时，才继续执行 TB1 warp1 的第七行指令。  </p>
+<p> <img src="/img/20150220.jpg" alt=""></p>
+<p>　　实际上，warp 也是 CUDA 中，每一个 SM 执行的最小单位;如果 GPU 有 16 组 SM 的话，也就代表他真正在执行的 thread 数目会是 32x16 个。不过由于 CUDA 是要透过 warp 的切换来隐藏 thread 的延迟、等待，来达到大量平行化的目的，所以会用所谓的 active thread 这个名词来代表一个 SM 里同时可以处理的 thread 数目。<br>　　而在 block 的方面，一个 SM 可以同时处理多个 thread block，当其中有 block 的所有 thread 都处理完后，他就会再去找其他还没处理的 block 来处理。假设有 16 个 SM、64 个 block、每个 SM 可以同时处理三个 block 的话，那一开始执行时，device 就会同时处理 48 个 block;而剩下的 16 个 block 则会等 SM 有处理完 block 后，再进到 SM 中处理，直到所有 block 都处理结束。<br>　　为一个多处理器指定了一个或多个要执行的线程块时，它会将其分成warp块，并由SIMT单元进行调度。将块分割为warp的方法总是相同的，每个warp都包含连续的线程，递增线程索引，第一个warp中包含全局线程过索引0-31。每发出一条指令时，SIMT单元都会选择一个已准备好执行的warp块，并将指令发送到该warp块的活动线程。Warp块每次执行一条通用指令，因此在warp块的全部32个线程执行同一条路径时，可达到最高效率。如果一个warp块的线程通过独立于数据的条件分支而分散，warp块将连续执行所使用的各分支路径，而禁用未在此路径上的线程，完成所有路径时，线程重新汇聚到同一执行路径下，其执行时间为各时间总和。分支仅在warp块内出现，不同的warp块总是独立执行的—无论它们执行的是通用的代码路径还是彼此无关的代码路径。</p>
+<p><strong>建议的数值?</strong><br>　　在 Compute Capability 1.0/1.1 中，每个 SM 最多可以同时管理 768 个 thread(768 active threads)或 8 个 block(8 active blocks);而每一个 warp 的大小，则是 32 个 thread，也就是一个 SM 最多可以有 768 / 32 = 24 个 warp(24 active warps)。到了 Compute Capability 1.2 的话，则是 active warp 则是变为 32，所以 active thread 也增加到 1024。<br>　　在这里，先以 Compute Capability 1.0/1.1 的数字来做计算。根据上面的数据，如果一个 block 里有 128 个 thread 的话，那一个 SM 可以容纳 6 个 block;如果一个 block 有 256 个 thread 的话，那 SM 就只能容纳 3 个 block。不过如果一个 block 只有 64 个 thread 的话，SM 可以容纳的 block 不会是 12 个，而是他本身的数量限制的 8 个。<br>　　因此在 Compute Capability 1.0/1.1 的硬件上，决定 block 大小的时候，最好让里面的 thread 数目是 warp 数量(32)的倍数(可以的话，是 64 的倍数会更好);而在一个 SM 里，最好也要同时存在复数个 block。如果再希望能满足最多 24 个 warp 的情形下，block 里的 thread 数目似乎会是 96(一个 SM 中有 8 个 block)、128(一个 SM 中有 6 个 block)、192(一个 SM 中有 4 个 block)、256(一个 SM 中有 3 个 block) 这些数字了～<br>　　Compute Capability 1.0/1.1 的硬件上，每个grid最多可以允许65535×65535个block。每个block最多可以允许512个thread，但是第三维上的最大值为64。而官方的建议则是一个 block 里至少要有 64 个 thread，192 或 256 个也是通常比较合适的数字(请参考 Programming Guide)。<br>　　但是是否这些数字就是最合适的呢?其实也不尽然。因为实际上，一个 SM 可以允许的 block 数量，还要另外考虑到他所用到 SM 的资源：shared memory、registers 等。在 G80 中，每个 SM 有 16KB 的 shared memory 和 8192 个 register。而在同一个 SM 里的 block 和 thread，则要共享这些资源;如果资源不够多个 block 使用的话，那 CUDA 就会减少 Block 的量，来让资源够用。在这种情形下，也会因此让 SM 的 thread 数量变少，而不到最多的 768 个。<br>　　比如说如果一个 thread 要用到 16 个 register 的话(在 kernel 中宣告的变量)，那一个 SM 的 8192 个 register 实际上只能让 512 个 thread 来使用;而如果一个 thread 要用 32 个 register，那一个 SM 就只能有 256 个 thread 了～而 shared memory 由于是 thread block 共享的，因此变成是要看一个 block 要用多少的 shread memory、一个 SM 的 16KB 能分给多少个 block 了。<br>　　所以虽然说当一个 SM 里的 thread 越多时，越能隐藏 latency，但是也会让每个 thread 能使用的资源更少。因此，这点也就是在优化时要做取舍的了。  </p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/cuda/">cuda</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/cuda/">cuda</a>
+  </div>
+
+        <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"分享自朂嘼的博客","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{},"image":{"viewList":["qzone","weixin","tsina","renren"],"viewText":"分享到：","viewSize":"32"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","weixin","tsina","renren"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ <nav id="pagination" >
+    
+    <a href="/2015/02/20/cuda-programming-tips/" class="alignleft prev" >上一页</a>
+    
+    
+    <a href="/2015/01/19/FPGA-first-intro-and-tips/" class="alignright next" >下一页</a>
+    
+    <div class="clearfix"></div>
+</nav>
+
+<section id="comment">
+  <!-- 多说评论框 start --> <div class="ds-thread" data-thread-key=2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/ data-title=原创————CUDA中SM对线程块的调度 data-url=/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/></div> <!-- 多说评论框 end --> <!-- 多说公共JS代码 start (一个网页只需插入一次) --> <script type="text/javascript"> var duoshuoQuery = {short_name:"ghx0x0"}; (function() { var ds = document.createElement('script'); ds.type = 'text/javascript';ds.async = true; ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js'; ds.charset = 'UTF-8'; (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds); })(); </script> <!-- 多说公共JS代码 end --> 
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/baidu" method="get" accept-charset="utf-8">
+    <input type="search" name="word" results="0" placeholder="搜索">
+    <input type="hidden" name="si" value="">
+    <input name=tn type=hidden value="bds">
+	<input name=cl type=hidden value="3">
+	<input name=ct type=hidden value="2097152">
+	<input name=s type=hidden value="on">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Pcl/">Pcl</a><small>5</small></li>
+  
+    <li><a href="/categories/cuda/">cuda</a><small>3</small></li>
+  
+    <li><a href="/categories/hexo/">hexo</a><small>2</small></li>
+  
+    <li><a href="/categories/三维配准/">三维配准</a><small>1</small></li>
+  
+    <li><a href="/categories/三维重建/">三维重建</a><small>1</small></li>
+  
+    <li><a href="/categories/嵌入式/">嵌入式</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/DSP/" style="font-size: 10.00px;">DSP</a><a href="/tags/FPGA/" style="font-size: 10.00px;">FPGA</a><a href="/tags/Pcl/" style="font-size: 20.00px;">Pcl</a><a href="/tags/cuda/" style="font-size: 16.67px;">cuda</a><a href="/tags/github/" style="font-size: 10.00px;">github</a><a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a><a href="/tags/三维/" style="font-size: 16.67px;">三维</a>
+  </div>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">最新文章</h3>
+  <ul class="entry">
+        
+          <li>
+            <a href="/2015/02/20/cuda-how-to-set-threads-blocks/">原创————CUDA中对线程块的设置</a>(<span class="ds-thread-count" data-thread-key="cuda-how-to-set-threads-blocks" data-count-type="comments"></span>)
+          </li>
+        
+          <li>
+            <a href="/2015/02/20/cuda-programming-tips/">原创————CUDA 编程知识点</a>(<span class="ds-thread-count" data-thread-key="cuda-programming-tips" data-count-type="comments"></span>)
+          </li>
+        
+          <li>
+            <a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/">原创————CUDA中SM对线程块的调度</a>(<span class="ds-thread-count" data-thread-key="cuda——how-the-SM-manage-the-threads-blocks" data-count-type="comments"></span>)
+          </li>
+        
+          <li>
+            <a href="/2015/01/19/FPGA-first-intro-and-tips/">原创————FPGA编程记录</a>(<span class="ds-thread-count" data-thread-key="FPGA-first-intro-and-tips" data-count-type="comments"></span>)
+          </li>
+        
+          <li>
+            <a href="/2015/01/15/SDF-meshing/">原创————SDF和marching cubes算法</a>(<span class="ds-thread-count" data-thread-key="SDF-meshing" data-count-type="comments"></span>)
+          </li>
+        
+  </ul>
+</div>
+
+
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 GH
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+<div id="totop" style="position:fixed;bottom:100px;right:50px;cursor: pointer;">
+<a title="���ض���"><img src="/imgs/scrollup.png"/></a>
+</div>
+<script src="/js/totop.js"></script>
+
+</body>
+</html>
+<a href="https://github.com/you"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png"></a>
