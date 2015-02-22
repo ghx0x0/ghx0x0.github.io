@@ -95,7 +95,7 @@
     <div class="article-content">
         
         <ol>
-<li><p>尽量满足每个sm上面的最大线程数。
+<li><p>尽量满足每个sm上面的最大线程数。<img src="/img/20130712090750-2146038257.jpg" class="img-topic">  
         
         
         <p class="article-more-link">
@@ -160,7 +160,7 @@
     <div class="article-content">
         
         <ol>
-<li><p>Cuda中对内核函数的调用&lt;&lt;&lt; m , n &gt;&gt;&gt;，m表示线程块的个数，n表示每个线程块的线程数，m个线程块构成一个线程格。M和n可以是一维的或者二维（三维）的，即使n是一维的，那么m也可以是二维的。
+<li><p>Cuda中对内核函数的调用&lt;&lt;&lt; m , n &gt;&gt;&gt;，m表示线程块的个数，n表示每个线程块的线程数，<img src="/img/20130712090750-2146038257.jpg" class="img-topic">  m个线程块构成一个线程格。M和n可以是一维的或者二维（三维）的，即使n是一维的，那么m也可以是二维的。   
         
         
         <p class="article-more-link">
@@ -224,7 +224,7 @@
 </header>
     <div class="article-content">
         
-        <h1 id="sm流处理器簇对blocks的调度策略">sm流处理器簇对blocks的调度策略</h1>
+        <h1 id="sm流处理器簇对blocks的调度策略">sm流处理器簇对blocks的调度策略<img src="/img/20130712090750-2146038257.jpg" class="img-topic"></h1>
 <p>在cuda中，GPU中的SM（GTX650M有2个sm处理器）被GPU调度器把线程块逐个分配到SM上，每个SM同时处理这个被分配的线程块，但是每次每个时刻都只能处理一个warp线程束，由于有时会存在内存读取等操作导致等待，那么SM会转而处理其他的warp来掩盖这个延迟。
         
         
@@ -289,7 +289,7 @@
 </header>
     <div class="article-content">
         
-        <p><img src="/img/光影魔术手拼图.jpg" class="img-topic">     之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录  
+        <p><img src="/img/光影魔术手拼图.jpg" class="img-topic">     之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录。  
         
         
         <p class="article-more-link">
@@ -353,7 +353,7 @@
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20150115194014.jpg" alt=""><br>SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。   
+        <p><img src="/img/QQ截图20150115194014.jpg" class="img-topic"><br>SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。   
         
         
         <p class="article-more-link">
@@ -417,7 +417,7 @@
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20150115193156.jpg" alt=""><br>MLS是点云领域内比较重要，并且也是用的比较多的平滑方法，Pcl封装了MLS的函数并且可以利用MLS来估算点云的法向，在此基础上，Rusu曾提出更为鲁棒的RMLS算法，可以抑制在sharp边缘处被平滑成光滑的曲面。 
+        <p><img src="/img/QQ截图20150115193156.jpg" class="img-topic"><br>MLS是点云领域内比较重要，并且也是用的比较多的平滑方法，Pcl封装了MLS的函数并且可以利用MLS来估算点云的法向，在此基础上，Rusu曾提出更为鲁棒的RMLS算法，可以抑制在sharp边缘处被平滑成光滑的曲面。 
         
         
         <p class="article-more-link">
@@ -481,7 +481,7 @@
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20141230213405.jpg" alt=""><br>目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。  
+        <p><img src="/img/QQ截图20141230213405.jpg" class="img-topic"><br>目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。  
         
         
         <p class="article-more-link">
@@ -609,7 +609,7 @@
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20141114194417.jpg" alt=""><br>这几天看到kinect fusion 的效果后，对其非常感兴趣，于是也想搭建一个kinect fusion 的框架自己玩玩，无奈PCL中kinfu的开源代码一直是测试版本，并没有release发布版，于是只能默默的卸载之前安装的1.7.1版本换上PCL的测试版本。   
+        <p><img src="/img/QQ截图20141114194417.jpg" class="img-topic"><br>这几天看到kinect fusion 的效果后，对其非常感兴趣，于是也想搭建一个kinect fusion 的框架自己玩玩，无奈PCL中kinfu的开源代码一直是测试版本，并没有release发布版，于是只能默默的卸载之前安装的1.7.1版本换上PCL的测试版本。   
         
         
         <p class="article-more-link">
