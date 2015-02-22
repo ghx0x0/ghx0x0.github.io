@@ -18,7 +18,6 @@
 <meta property="og:url" content="/2015/01/19/FPGA-first-intro-and-tips/">
 <meta property="og:site_name" content="GH‘s blog">
 <meta property="og:description" content="之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录">
-<meta property="og:image" content="/img/光影魔术手拼图.jpg">
 <meta property="og:image" content="/img/QQ截图20150119195025.jpg">
 <meta property="og:image" content="/img/QQ截图20150119195438.jpg">
 <meta property="og:image" content="/img/QQ截图20150119203844.jpg">
@@ -116,8 +115,7 @@
 		
 		</div>
 		
-		<p><img src="/img/光影魔术手拼图.jpg" class="img-topic"></p>
-<p>之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录   <a id="more"></a>     </p>
+		<p>之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录   <a id="more"></a>     </p>
 <h1 id="FPGA基本知识">FPGA基本知识</h1>
 <p>FPGA芯片是一种具有很多引脚的封装芯片。FPGA 内部主要三块：可编程的逻辑单元、可编程的连线和可编程的 IO 模块。我们开发FPGA芯片就是去对FPGA进行模块化设计。这就好比C语言中实现不同功能的各个封装好的类，其中有些类的输出是另外一些类的输入。但是与C变成所不同的是，FPGA的程序是所有模块同时运行的，而在传统的C编程中，不同的类和他们的成员函数是先后调用的，所以在对FPGA进行编程的时候是需要格外注意时序问题。  </p>
 <p>FPGA的内部电路是模块化的设计，一个FPGA芯片就是最顶层的模块，在他下面会有许多其他的模块，如图像编码解码模块，图像处理模块，SRAM读写模块等等，每个模块都具有若干输入端口和输出端口，一个模块的输入端口要么连接在上层模块的输入端口，要么连接在另一个同级模块的输出端口；最底层模块的内部由逻辑元件、存储元件和导线构成。  </p>
