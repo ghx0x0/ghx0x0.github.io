@@ -4,29 +4,32 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>原创————Pcl开源库1.7.1版本的安装 | GH‘s blog</title>
+    <title>CUDA配置——cpp文件对cu文件的调用 | GH‘s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="GH">
     
-    <meta name="description" content="最开始安装PCL，是直接利用all-in-one安装的1.6.0版本，但是PCL中有许多区域分割的新功能以及配准方面新出的NDT算法只有1.7以上的版本才能实现，所以从源码编译安装了当时的PCL的最高release版本1.7.1版本，目前PCL已经公开了1.7.2版本和一个测试的master版本。关于PCL公开的源码可以从PCL的github主页上下载。
-https://github.com/PointCloudLibrary/pcl
-1.7.1版本的具体安装步骤如下：">
+    <meta name="description" content="Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。">
     
     
-    <meta name="description" content="最开始安装PCL，是直接利用all-in-one安装的1.6.0版本，但是PCL中有许多区域分割的新功能以及配准方面新出的NDT算法只有1.7以上的版本才能实现，所以从源码编译安装了当时的PCL的最高release版本1.7.1版本，目前PCL已经公开了1.7.2版本和一个测试的master版本。关于PCL公开的源码可以从PCL的github主页上下载。
-https://github.com/Po">
+    <meta name="description" content="Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="原创————Pcl开源库1.7.1版本的安装">
-<meta property="og:url" content="/2014/11/14/install-pcl1-7-1/">
+<meta property="og:title" content="CUDA配置——cpp文件对cu文件的调用">
+<meta property="og:url" content="/2015/02/25/cuda-vs2010-configure-cuda/">
 <meta property="og:site_name" content="GH‘s blog">
-<meta property="og:description" content="最开始安装PCL，是直接利用all-in-one安装的1.6.0版本，但是PCL中有许多区域分割的新功能以及配准方面新出的NDT算法只有1.7以上的版本才能实现，所以从源码编译安装了当时的PCL的最高release版本1.7.1版本，目前PCL已经公开了1.7.2版本和一个测试的master版本。关于PCL公开的源码可以从PCL的github主页上下载。
-https://github.com/Po">
-<meta property="og:image" content="/img/QQ截图20141114184059.jpg">
+<meta property="og:description" content="Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。">
+<meta property="og:image" content="/img/20130712090750-2146038257.jpg">
+<meta property="og:image" content="/img/QQ截图20150225144806.bmp">
+<meta property="og:image" content="/img/QQ截图20150225143902.bmp">
+<meta property="og:image" content="/img/QQ截图20150225143939.bmp">
+<meta property="og:image" content="/img/QQ截图20150225144000.bmp">
+<meta property="og:image" content="/img/QQ截图20150225144017.bmp">
+<meta property="og:image" content="/img/QQ截图20150225144036.bmp">
+<meta property="og:image" content="/img/QQ截图20150225144239.bmp">
+<meta property="og:image" content="/img/QQ截图20150225144306.bmp">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="原创————Pcl开源库1.7.1版本的安装">
-<meta name="twitter:description" content="最开始安装PCL，是直接利用all-in-one安装的1.6.0版本，但是PCL中有许多区域分割的新功能以及配准方面新出的NDT算法只有1.7以上的版本才能实现，所以从源码编译安装了当时的PCL的最高release版本1.7.1版本，目前PCL已经公开了1.7.2版本和一个测试的master版本。关于PCL公开的源码可以从PCL的github主页上下载。
-https://github.com/Po">
+<meta name="twitter:title" content="CUDA配置——cpp文件对cu文件的调用">
+<meta name="twitter:description" content="Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。">
 
 
     
@@ -236,14 +239,14 @@ https://github.com/Po">
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/11/14/install-pcl1-7-1/" title="原创————Pcl开源库1.7.1版本的安装" itemprop="url">原创————Pcl开源库1.7.1版本的安装</a>
+      <a href="/2015/02/25/cuda-vs2010-configure-cuda/" title="CUDA配置——cpp文件对cu文件的调用" itemprop="url">CUDA配置——cpp文件对cu文件的调用</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2014-11-14T09:19:09.000Z" itemprop="datePublished"> 发表于 11月 14 2014</time>
+    <time datetime="2015-02-25T06:50:54.000Z" itemprop="datePublished"> 发表于 2月 25 2015</time>
     
   </p>
 </header>
@@ -252,37 +255,35 @@ https://github.com/Po">
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原创博文"><span class="toc-number">1.</span> <span class="toc-text">原创博文</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#转载请注明出处"><span class="toc-number">2.</span> <span class="toc-text">转载请注明出处</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#文件配置"><span class="toc-number">1.</span> <span class="toc-text">文件配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工程属性配置"><span class="toc-number">2.</span> <span class="toc-text">工程属性配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tips:"><span class="toc-number">3.</span> <span class="toc-text">Tips:</span></a></li></ol>
 		
 		</div>
 		
-		<p>最开始安装PCL，是直接利用all-in-one安装的1.6.0版本，但是PCL中有许多区域分割的新功能以及配准方面新出的NDT算法只有1.7以上的版本才能实现，所以从源码编译安装了当时的PCL的最高release版本1.7.1版本，目前PCL已经公开了1.7.2版本和一个测试的master版本。关于PCL公开的源码可以从PCL的github主页上下载。</p>
-<p><a href="https://github.com/PointCloudLibrary/pcl" target="_blank" rel="external">https://github.com/PointCloudLibrary/pcl</a></p>
-<p>1.7.1版本的具体安装步骤如下： <a id="more"></a> </p>
+		<p>Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，<img src="/img/20130712090750-2146038257.jpg" class="img-topic">但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。<a id="more"></a>  </p>
+<h1 id="文件配置">文件配置</h1>
+<p>因为我们要调用cu文件来进行加速，所以对于cu文件，需要把原来调用global设备函数的主函数main更改名字，如testghmain（）; 之后在其前面加上extern “C” 。  </p>
+<p> <img src="/img/QQ截图20150225144806.bmp" alt=""></p>
+<p>在cpp文件中，对testghmain函数进行调用，所以需要对其事先进行声明。<br>extern “C” int testghmain();  </p>
+<p> <img src="/img/QQ截图20150225143902.bmp" alt=""></p>
+<p>之后便可以在需要的地方直接调用testghmain（）了。  </p>
+<p> <img src="/img/QQ截图20150225143939.bmp" alt=""></p>
+<h1 id="工程属性配置">工程属性配置</h1>
+<p>此外，还需要对工程进行一些配置，右键工程-&gt;属性-&gt;附加依赖项，添加cudart.lib； </p>
+<p>  <img src="/img/QQ截图20150225144000.bmp" alt=""></p>
+<p>右键工程-&gt;生成自定义-&gt;选择cuda6.5； </p>
+<p> <img src="/img/QQ截图20150225144017.bmp" alt=""></p>
+<p>右键添加的cu文件，属性-&gt;常规-&gt;项类型，选择cuda c/c++。</p>
+<p> <img src="/img/QQ截图20150225144036.bmp" alt=""></p>
+<p>至此就全部配置完成，可以运行程序看看结果。测试程序是对数组a= { 1, 2, 3, 4, 5 };b= { 10, 20, 30, 40, 50 };相加得到c数组并计算c数组所有数据之和，正确结果应该返回165。 </p>
+<p>  <img src="/img/QQ截图20150225144239.bmp" alt=""></p>
+<p>下面是在mfc中cpp文件来调用cu文件的项目结构组成，在其他类型的vs工程中调用cu也是如此，封装cu，添加extern “C”，更改项目属性配置。  </p>
+<p>  <img src="/img/QQ截图20150225144306.bmp" alt=""></p>
+<h1 id="Tips:">Tips:</h1>
 <ol>
-<li>卸载PCL1.6.0版本  </li>
-<li>卸载、清除1.6.0版本的boost eigen  flann vtk  qhull所有记录和文件  </li>
-<li>重新安装压缩包内的boost eigen  flann vtk  qhull  QT4.8.0，默认为C盘  QT路径为 C:\Qt\4.8.0  </li>
-<li>安装cmake  2.8以上版本  </li>
-<li>解压缩1.7.1原代码包  </li>
-<li>打开cmake 编译1.7.1源代码  </li>
+<li>kernel函数是需要进行封装才能添加extern “C”来进行声明并调用的，cpp文件中是不能直接调用 <strong>global</strong> 函数的，因为编译器是无法解析符号&lt;&lt;&lt;……&gt;&gt;&gt;以及blockIdx、threadIdx等，因此 <strong>global</strong> 函数只能放在.cu文件函数里面定义和调用。   </li>
+<li>用extern “C” 修饰的原因，就是.cu是扩展C，但只是部分只是cpp，所以需要定义为类C语言编译（NVCC.exe编译）。  </li>
+<li>Cpp中是不能include“.cu”文件的，就好比cpp中不能include“.cpp”一样。  </li>
 </ol>
-<p>一开始到这，通过cmake编译出PCL的vs2010的工程后，以为直接在VS2010中编译工程后就会成功安装，但是实际上1.7.1版本的源码在png_io.h文件内是有存在bug的地方的，这个问题困扰了很久，不过最终在PCL的官方论坛上找到了解答。按照如下修改png_io.h文件：</p>
-<p>把io\include\pcl\io\png_io.h文件报错地方”template &lt;“的前四行注释掉，重新编译io模块，修改后的内容如下：<br>//    PCL_DEPRECATED (template <typename t=""> void savePNGFile (const std::string&amp; file_name, const pcl::PointCloud<t>&amp; cloud),<br>//    “pcl::io::savePNGFile<typename t=""> (file_name, cloud) is deprecated, please use a new generic “<br>//    “function pcl::io::savePNGFile (file_name, cloud, field_name) with \”rgb\” as the field name.”<br>//    );</typename></t></typename></p>
-<p>重新编译整个PCL工程，这次就可以完全正确，并最终右键install，点击编译完成PCL1.7.1的安装。</p>
-<p>整个过程中，右键all-build，进行编译，时间较长，大约1小时，通过后右键install进行编译<br>完成后查看C盘内C:\Program Files\PCL是否有PCL，有的话那么恭喜你，PCL成功安装了。</p>
-<p>Tips and bugs：  </p>
-<ol>
-<li>在我实验室的电脑上成功安装PCL后，新建使用PCL的MFC程序，编译无误但是最终会提示找不到链接库，无论vs的项目属性如何配置都解决不了，最终通过把1.7.1的工程需要dll全部放入工程的debug/文件夹下才得以解决；</li>
-<li>在MFC中加入PCL的功能模块没有想象中的那么难，最开始参看PCL中国论坛上的田博士的移植方法，觉得步骤太多太过繁琐，没敢去尝试，后来自己摸索，其实在MFC中掺入PCL只需要在你编译好的PCL完整工程中找到所需要的PCL模块的属性配置，并把他们配置到你的MFC中，并加入头文件即可；</li>
-<li>在MFC中如果使用ifstream    string 等标示符需要前面加std;</li>
-<li><p>在使用PCL重建模块中的MLS算法时，会出现vector越界的情况，更改方法如下：<br><a href="https://github.com/batakon/pcl/commit/e655606c7393f886f28f97a2ed6d56c5db84f935" target="_blank" rel="external">Fix MovingLeastSquares mls<em>results</em> vector assert error</a>  </p>
-<p><img src="/img/QQ截图20141114184059.jpg" alt=""></p>
-</li>
-<li>另外一个bug记不清是怎么出现的了，修改方法：<br><a href="https://github.com/PointCloudLibrary/pcl/pull/304/files" target="_blank" rel="external">Fix compiling error of deprecated template.</a></li>
-</ol>
-<h1 id="原创博文">原创博文</h1>
-<h1 id="转载请注明出处">转载请注明出处</h1>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -290,13 +291,13 @@ https://github.com/Po">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Pcl/">Pcl</a>
+  <a class="article-category-link" href="/categories/cuda/">cuda</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Pcl/">Pcl</a>
+  <span></span> <a href="/tags/cuda/">cuda</a>
   </div>
 
 </div>
@@ -341,19 +342,11 @@ https://github.com/Po">
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/11/14/install-pcl-master-for-kinfu/" title="原创————安装带有kinfu的测试版本PCL">
-  <strong>上一篇：</strong><br/>
-  <span>
-  原创————安装带有kinfu的测试版本PCL</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/11/12/pcl-intro/"  title="PCL点云库（Point Cloud Library）简介">
+<a href="/2015/02/20/cuda-how-to-set-threads-blocks/"  title="原创————CUDA中对线程块的设置">
  <strong>下一篇：</strong><br/> 
- <span>PCL点云库（Point Cloud Library）简介
+ <span>原创————CUDA中对线程块的设置
 </span>
 </a>
 </div>
@@ -362,7 +355,7 @@ https://github.com/Po">
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2014/11/14/install-pcl1-7-1/" data-title="原创————Pcl开源库1.7.1版本的安装" data-url="/2014/11/14/install-pcl1-7-1/"></div>
+	<div class="ds-thread" data-thread-key="2015/02/25/cuda-vs2010-configure-cuda/" data-title="CUDA配置——cpp文件对cu文件的调用" data-url="/2015/02/25/cuda-vs2010-configure-cuda/"></div>
 </section>
 
 
@@ -372,7 +365,7 @@ https://github.com/Po">
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#原创博文"><span class="toc-number">1.</span> <span class="toc-text">原创博文</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#转载请注明出处"><span class="toc-number">2.</span> <span class="toc-text">转载请注明出处</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#文件配置"><span class="toc-number">1.</span> <span class="toc-text">文件配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#工程属性配置"><span class="toc-number">2.</span> <span class="toc-text">工程属性配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tips:"><span class="toc-number">3.</span> <span class="toc-text">Tips:</span></a></li></ol>
  
   </div>
 
