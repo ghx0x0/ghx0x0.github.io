@@ -33,6 +33,8 @@
 <meta property="og:image" content="/img/QQ截图20150119201554.jpg">
 <meta property="og:image" content="/img/QQ截图20150119201618.jpg">
 <meta property="og:image" content="/img/QQ截图20150119201351.jpg">
+<meta property="og:image" content="/img/QQ截图20150420152604.jpg">
+<meta property="og:image" content="/img/QQ截图20150420153033.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="原创————FPGA编程记录">
 <meta name="twitter:description" content="之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录。">
@@ -299,9 +301,15 @@
 <ol>
 <li>FPGA中if判断语句不算作寄存器,只是逻辑运算电路,故没有时延。  </li>
 <li>FPGA中对sram的写操作,地址都是正常的DSP地址除以2所得。  </li>
-<li>DSP地址是8位的,FPGA是16位的,dsp对char写时,第一个字节写入,但是还是会占用第二个字节,是个空字节,所以DSP的地址永远是FPGA的地址的2倍。  </li>
+<li>DSP地址是8位的,FPGA是16位的,dsp对char写时,第一个字节写入,但是还是会占用第二个字节,是个空字节,所以DSP的地址永远是FPGA的地址的2倍，具体硬件上的实现可以参见下面的图1。  </li>
 <li>写坐标(harris和circle)的fifo中，flag_1c是为了和row和col时钟对齐，因为col和row是个reg，所以会延时1个clk，所以把flag_1c&lt;=flag。  </li>
-<li>DSP中加入计时器,在系统STS里加入变量,在images_and_keypoints里加入声明，最后在文件中加入STS.H头文件，否则编译不成功。  </li>
+<li>图像卡上有两块SRAM，不妨称为SRAM_A和SRAM_B，它们都是16位宽度，512K容量。FPGA与DSP轮流访问这两块SRAM。对于DSP和FPGA的切换访问SRAM，是将DSP的引脚通过FPGA内的导线连接到SRAM的相关引脚，在FPGA内部对其进行控制，所以DSP程序可以不关心访问的切换。此外，DSP读写SRAM时没有借助FPGA内的时钟。因此，与访问CE3空间比较起来，DSP对CE2空间的读写速度更快。DSP将CE2空间配置成了SRAM，将CE3空间配置成了FPGA内部寄存器。   </li>
+<li>图像卡上只有求直方图时利用了megafunction生成了RAM缓存，霍夫变换中可能也可以申请两块RAM缓存作为霍夫空间，不过目前并没有试过。直方图申请的这两块RAM，它们都是双口RAM，也就是可以在同一个时钟周期同时进行读操作和写操作。之所以采用两个RAM，是为了并行操作——FPGA在使用其中一块RAM中统计直方图时，将另一块RAM中存储的上一帧的直方图写入FPGA片外的SRAM存储器。示图见最下图2。</li>
+<li><p>DSP中加入计时器,在系统STS里加入变量,在images_and_keypoints里加入声明，最后在文件中加入STS.H头文件，否则编译不成功。<br><img src="/img/QQ截图20150420152604.jpg" alt=""></p>
+<pre><code>                             图1
+</code></pre><p><img src="/img/QQ截图20150420153033.jpg" alt=""></p>
+<pre><code>                             图2
+</code></pre></li>
 </ol>
 <h1 id="原创博文">原创博文</h1>
 <h1 id="转载请注明出处">转载请注明出处</h1>
@@ -312,13 +320,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/嵌入式/">嵌入式</a>
+  <a class="article-category-link" href="/categories/FPGA/">FPGA</a>►<a class="article-category-link" href="/categories/FPGA/DSP/">DSP</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/FPGA/">FPGA</a><a href="/tags/DSP/">DSP</a>
+  <span></span> <a href="/tags/嵌入式/">嵌入式</a>
   </div>
 
 </div>
@@ -407,7 +415,15 @@
 	<p class="asidetitle">分类</p>
 		<ul>
 		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
 			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
 		
 			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
 		
@@ -417,7 +433,7 @@
 		
 			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
 		
-			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>1</sup></a></li>
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
 		
 		</ul>
 </div>
@@ -428,19 +444,25 @@
 	<p class="asidetitle">标签</p>
 		<ul class="clearfix">
 		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
 			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
 		
 			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
 		
 			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
 		
 			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
 		
-			<li><a href="/tags/DSP/" title="DSP">DSP<sup>1</sup></a></li>
-		
-			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>1</sup></a></li>
-		
 			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
 		
 		</ul>
 </div>

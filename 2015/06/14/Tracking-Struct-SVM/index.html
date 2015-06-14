@@ -1,0 +1,650 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Tracking————结构SVM | GH‘s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="GH">
+    
+    <meta name="description" content="Tracking的两大类别
+通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前很多先进的方法是把这两个分支的方法融合到一块。">
+    
+    
+    <meta name="description" content="Tracking的两大类别
+通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tracking————结构SVM">
+<meta property="og:url" content="/2015/06/14/Tracking-Struct-SVM/">
+<meta property="og:site_name" content="GH‘s blog">
+<meta property="og:description" content="Tracking的两大类别
+通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前">
+<meta property="og:image" content="/img/struct-svm.jpg">
+<meta property="og:image" content="/img/QQ截图20150614153829.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tracking————结构SVM">
+<meta name="twitter:description" content="Tracking的两大类别
+通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前">
+
+
+    
+    <link rel="alternative" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="GH‘s blog" title="GH‘s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="GH‘s blog">GH‘s blog</a></h1>
+				<h2 class="blog-motto">尚未被开垦的小帅哥</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">首页</a></li>
+					
+						<li><a href="/archives">存档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li> <a title="把这个链接拖到你的Chrome收藏夹工具栏中" href='javascript:(function() {
+						function c() {
+							var e = document.createElement("link");
+							e.setAttribute("type", "text/css");
+							e.setAttribute("rel", "stylesheet");
+							e.setAttribute("href", f);
+							e.setAttribute("class", l);
+							document.body.appendChild(e)
+						}
+					 
+						function h() {
+							var e = document.getElementsByClassName(l);
+							for (var t = 0; t < e.length; t++) {
+								document.body.removeChild(e[t])
+							}
+						}
+					 
+						function p() {
+							var e = document.createElement("div");
+							e.setAttribute("class", a);
+							document.body.appendChild(e);
+							setTimeout(function() {
+								document.body.removeChild(e)
+							}, 100)
+						}
+					 
+						function d(e) {
+							return {
+								height : e.offsetHeight,
+								width : e.offsetWidth
+							}
+						}
+					 
+						function v(i) {
+							var s = d(i);
+							return s.height > e && s.height < n && s.width > t && s.width < r
+						}
+					 
+						function m(e) {
+							var t = e;
+							var n = 0;
+							while (!!t) {
+								n += t.offsetTop;
+								t = t.offsetParent
+							}
+							return n
+						}
+					 
+						function g() {
+							var e = document.documentElement;
+							if (!!window.innerWidth) {
+								return window.innerHeight
+							} else if (e && !isNaN(e.clientHeight)) {
+								return e.clientHeight
+							}
+							return 0
+						}
+					 
+						function y() {
+							if (window.pageYOffset) {
+								return window.pageYOffset
+							}
+							return Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+						}
+					 
+						function E(e) {
+							var t = m(e);
+							return t >= w && t <= b + w
+						}
+					 
+						function S() {
+							var e = document.createElement("audio");
+							e.setAttribute("class", l);
+							e.src = i;
+							e.loop = false;
+							e.addEventListener("canplay", function() {
+								setTimeout(function() {
+									x(k)
+								}, 500);
+								setTimeout(function() {
+									N();
+									p();
+									for (var e = 0; e < O.length; e++) {
+										T(O[e])
+									}
+								}, 15500)
+							}, true);
+							e.addEventListener("ended", function() {
+								N();
+								h()
+							}, true);
+							e.innerHTML = " <p>If you are reading this, it is because your browser does not support the audio element. We recommend that you get a new browser.</p> <p>";
+							document.body.appendChild(e);
+							e.play()
+						}
+					 
+						function x(e) {
+							e.className += " " + s + " " + o
+						}
+					 
+						function T(e) {
+							e.className += " " + s + " " + u[Math.floor(Math.random() * u.length)]
+						}
+					 
+						function N() {
+							var e = document.getElementsByClassName(s);
+							var t = new RegExp("\\b" + s + "\\b");
+							for (var n = 0; n < e.length; ) {
+								e[n].className = e[n].className.replace(t, "")
+							}
+						}
+					 
+						var e = 30;
+						var t = 30;
+						var n = 350;
+						var r = 350;
+						var i = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+						var s = "mw-harlem_shake_me";
+						var o = "im_first";
+						var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
+						var a = "mw-strobe_light";
+						var f = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+						var l = "mw_added_css";
+						var b = g();
+						var w = y();
+						var C = document.getElementsByTagName("*");
+						var k = null;
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								if (E(A)) {
+									k = A;
+									break
+								}
+							}
+						}
+						if (A === null) {
+							console.warn("Could not find a node of the right size. Please try a different page.");
+							return
+						}
+						c();
+						S();
+						var O = [];
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								O.push(A)
+							}
+						}
+					})()    '>点我点我^_^</a> </li>
+					<li>
+ 					
+						<form class="search" action="http://www.baidu.com/" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/06/14/Tracking-Struct-SVM/" title="Tracking————结构SVM" itemprop="url">Tracking————结构SVM</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
+		
+  <p class="article-time">
+    <time datetime="2015-06-14T06:27:01.000Z" itemprop="datePublished"> 发表于 6月 14 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tracking的两大类别"><span class="toc-number">1.</span> <span class="toc-text">Tracking的两大类别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结构SVM"><span class="toc-number">2.</span> <span class="toc-text">结构SVM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#训练阶段正负样本的选取"><span class="toc-number">2.1.</span> <span class="toc-text">训练阶段正负样本的选取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#当前帧的结果怎么选取"><span class="toc-number">2.2.</span> <span class="toc-text">当前帧的结果怎么选取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips："><span class="toc-number">2.3.</span> <span class="toc-text">Tips：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">2.4.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="Tracking的两大类别">Tracking的两大类别<img src="/img/struct-svm.jpg" class="img-topic"></h1>
+<p>通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。<br>而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前很多先进的方法是把这两个分支的方法融合到一块。  <a id="more"></a>  </p>
+<h1 id="结构SVM">结构SVM</h1>
+<p>和正常的SVM算法不同，结构SVM只有输入向量X，正常的SVM是输入X对应一个输出向量Y。在结构SVM中，每个输入向量（图像的特征：灰度等）对应一个状态量state：{x，y，angel，scale..}，但是这个状态量不作为输出特征。<br>在训练过程中，样本不在有正负样本的区别，所有的样本都是地位相同的，但是会有一个ground_truth。每个样本和这个ground_truth做相似性度量，得到相似度，越相似的样本评分越高，他们的排名就越靠前。在结构SVM中的优化目标和约束条件如下：<br>  <img src="/img/QQ截图20150614153829.jpg" alt=""></p>
+<p>其中的Ф是核函数，Δ是这两个样本的相似性函数。因此结构SVM的最终优化是使得每个样本的排名都跟他们和ground_truth的相似度相吻合（只要排名顺序一致即可，相似性度量结果无关紧要）。<br>在测试阶段，给入一个向量X，结构SVM判断这些向量的排名rank，排名第一的向量认为是和当前样本X最相似的，因此把他的state：{x，y，angel，scale..}可以看做是当前样本的state。所以结构SVM能够直接获取特征X对应的state，而不再是传统的分类模型中的0,1,0,1….。  </p>
+<h2 id="训练阶段正负样本的选取">训练阶段正负样本的选取</h2>
+<p>在结构SVM中，没有正负样本之称，上一帧检测到的结果ground_truth，在其周围高斯采样样本，判断他们的相似性，得到rank，加入结构SVM中增量训练。  </p>
+<h2 id="当前帧的结果怎么选取">当前帧的结果怎么选取</h2>
+<p>根据上一帧检测到的结果ground_truth，在其周围高斯采样样本（这个采样和上一步训练阶段的采样可以相同也可以不同），对每个样本投入结构SVM中判断哪个样本能使SVM中训练阶段排名最高（上一帧的ground_truth）仍旧排名最高，那么这个样本就是这一帧的ground_truth。这一阶段采样越密，精度越高，但是耗时也就越长。  </p>
+<h2 id="Tips：">Tips：</h2>
+<p>文章[1]中的增量PCA的引入是为了消除特征之间的关联，把原始特征映射到子空间，之后又映射回原始空间来消除特征耦合，之后送入结构SVM中进行训练。<br>事实上，利用文章[1]提出的虚拟态state的框架，增量PCA可以替换成任意一个生成模型的算法。  </p>
+<h2 id="参考：">参考：</h2>
+<p>  <a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=7042287" target="_blank" rel="external">【1】Online State-Based Structured SVM Combined With Incremental PCA for Robust Visual Tracking</a>  </p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>►<a class="article-category-link" href="/categories/Machine-Learning/Tracking/">Tracking</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Computer-vision/">Computer vision</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"1735208065"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2009886" charset="utf-8"></script>      
+
+	 </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/06/14/Tracking-TLD/" title="Tracking————TLD跟踪">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Tracking————TLD跟踪</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/06/14/Sift-LOG-and-DOG/"  title="Sift算法中为什么用DoG来近似LoG">
+ <strong>下一篇：</strong><br/> 
+ <span>Sift算法中为什么用DoG来近似LoG
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/06/14/Tracking-Struct-SVM/" data-title="Tracking————结构SVM" data-url="/2015/06/14/Tracking-Struct-SVM/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Tracking的两大类别"><span class="toc-number">1.</span> <span class="toc-text">Tracking的两大类别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#结构SVM"><span class="toc-number">2.</span> <span class="toc-text">结构SVM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#训练阶段正负样本的选取"><span class="toc-number">2.1.</span> <span class="toc-text">训练阶段正负样本的选取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#当前帧的结果怎么选取"><span class="toc-number">2.2.</span> <span class="toc-text">当前帧的结果怎么选取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips："><span class="toc-number">2.3.</span> <span class="toc-text">Tips：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">2.4.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
+			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
+		
+			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/categories/三维配准/" title="三维配准">三维配准<sup>1</sup></a></li>
+		
+			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
+		
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
+			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
+		
+			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
+		
+			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
+		
+			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://ibruce.info/2013/11/22/hexo-your-blog/" target="_blank" title="不如">不如</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Guohao in CASIA. <br/>
+			I&#39;ll share my learning experience with u at this blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1735208065" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/ghx0x0" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:hao.guo@ia.ac.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Pacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="GH">GH</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ghx0x0"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+  </body>
+</html>

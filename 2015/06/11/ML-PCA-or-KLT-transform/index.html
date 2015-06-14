@@ -1,0 +1,679 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ML学习笔记之————PCA降维（信号处理领域也叫KLT变换） | GH‘s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="GH">
+    
+    <meta name="description" content="PCA降维(信号处理领域也叫KLT变换)  
+PCA 与 Linear Regression 的区别：
+
+PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  
+more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2,…,xn}投影到这个surface后使得各点间variance最大（跟y没有关系，是寻找最能够表现这些feature的一个平面）；而Linear Regression是给出{x1,x2,…,xn}，希望根据x去预测y，所以进行回归。">
+    
+    
+    <meta name="description" content="PCA降维(信号处理领域也叫KLT变换)  
+PCA 与 Linear Regression 的区别：
+
+PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  
+more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）">
+<meta property="og:url" content="/2015/06/11/ML-PCA-or-KLT-transform/">
+<meta property="og:site_name" content="GH‘s blog">
+<meta property="og:description" content="PCA降维(信号处理领域也叫KLT变换)  
+PCA 与 Linear Regression 的区别：
+
+PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  
+more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2">
+<meta property="og:image" content="/img/196.jpg">
+<meta property="og:image" content="/img/QQ截图20150614125841.jpg">
+<meta property="og:image" content="/img/QQ截图20150614130119.jpg">
+<meta property="og:image" content="/img/QQ截图20150614125857.jpg">
+<meta property="og:image" content="/img/QQ截图20150614125908.jpg">
+<meta property="og:image" content="/img/QQ截图20150614125918.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）">
+<meta name="twitter:description" content="PCA降维(信号处理领域也叫KLT变换)  
+PCA 与 Linear Regression 的区别：
+
+PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  
+more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2">
+
+
+    
+    <link rel="alternative" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="GH‘s blog" title="GH‘s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="GH‘s blog">GH‘s blog</a></h1>
+				<h2 class="blog-motto">尚未被开垦的小帅哥</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">首页</a></li>
+					
+						<li><a href="/archives">存档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li> <a title="把这个链接拖到你的Chrome收藏夹工具栏中" href='javascript:(function() {
+						function c() {
+							var e = document.createElement("link");
+							e.setAttribute("type", "text/css");
+							e.setAttribute("rel", "stylesheet");
+							e.setAttribute("href", f);
+							e.setAttribute("class", l);
+							document.body.appendChild(e)
+						}
+					 
+						function h() {
+							var e = document.getElementsByClassName(l);
+							for (var t = 0; t < e.length; t++) {
+								document.body.removeChild(e[t])
+							}
+						}
+					 
+						function p() {
+							var e = document.createElement("div");
+							e.setAttribute("class", a);
+							document.body.appendChild(e);
+							setTimeout(function() {
+								document.body.removeChild(e)
+							}, 100)
+						}
+					 
+						function d(e) {
+							return {
+								height : e.offsetHeight,
+								width : e.offsetWidth
+							}
+						}
+					 
+						function v(i) {
+							var s = d(i);
+							return s.height > e && s.height < n && s.width > t && s.width < r
+						}
+					 
+						function m(e) {
+							var t = e;
+							var n = 0;
+							while (!!t) {
+								n += t.offsetTop;
+								t = t.offsetParent
+							}
+							return n
+						}
+					 
+						function g() {
+							var e = document.documentElement;
+							if (!!window.innerWidth) {
+								return window.innerHeight
+							} else if (e && !isNaN(e.clientHeight)) {
+								return e.clientHeight
+							}
+							return 0
+						}
+					 
+						function y() {
+							if (window.pageYOffset) {
+								return window.pageYOffset
+							}
+							return Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+						}
+					 
+						function E(e) {
+							var t = m(e);
+							return t >= w && t <= b + w
+						}
+					 
+						function S() {
+							var e = document.createElement("audio");
+							e.setAttribute("class", l);
+							e.src = i;
+							e.loop = false;
+							e.addEventListener("canplay", function() {
+								setTimeout(function() {
+									x(k)
+								}, 500);
+								setTimeout(function() {
+									N();
+									p();
+									for (var e = 0; e < O.length; e++) {
+										T(O[e])
+									}
+								}, 15500)
+							}, true);
+							e.addEventListener("ended", function() {
+								N();
+								h()
+							}, true);
+							e.innerHTML = " <p>If you are reading this, it is because your browser does not support the audio element. We recommend that you get a new browser.</p> <p>";
+							document.body.appendChild(e);
+							e.play()
+						}
+					 
+						function x(e) {
+							e.className += " " + s + " " + o
+						}
+					 
+						function T(e) {
+							e.className += " " + s + " " + u[Math.floor(Math.random() * u.length)]
+						}
+					 
+						function N() {
+							var e = document.getElementsByClassName(s);
+							var t = new RegExp("\\b" + s + "\\b");
+							for (var n = 0; n < e.length; ) {
+								e[n].className = e[n].className.replace(t, "")
+							}
+						}
+					 
+						var e = 30;
+						var t = 30;
+						var n = 350;
+						var r = 350;
+						var i = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+						var s = "mw-harlem_shake_me";
+						var o = "im_first";
+						var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
+						var a = "mw-strobe_light";
+						var f = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+						var l = "mw_added_css";
+						var b = g();
+						var w = y();
+						var C = document.getElementsByTagName("*");
+						var k = null;
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								if (E(A)) {
+									k = A;
+									break
+								}
+							}
+						}
+						if (A === null) {
+							console.warn("Could not find a node of the right size. Please try a different page.");
+							return
+						}
+						c();
+						S();
+						var O = [];
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								O.push(A)
+							}
+						}
+					})()    '>点我点我^_^</a> </li>
+					<li>
+ 					
+						<form class="search" action="http://www.baidu.com/" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/06/11/ML-PCA-or-KLT-transform/" title="ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）" itemprop="url">ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
+		
+  <p class="article-time">
+    <time datetime="2015-06-11T14:17:24.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PCA降维(信号处理领域也叫KLT变换)_"><span class="toc-number">1.</span> <span class="toc-text">PCA降维(信号处理领域也叫KLT变换)  </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PCA_与_Linear_Regression_的区别："><span class="toc-number">1.1.</span> <span class="toc-text">PCA 与 Linear Regression 的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#算法："><span class="toc-number">1.2.</span> <span class="toc-text">算法：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#从压缩数据中恢复原数据"><span class="toc-number">1.3.</span> <span class="toc-text">从压缩数据中恢复原数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎样决定降维个数/主成分个数"><span class="toc-number">1.4.</span> <span class="toc-text">怎样决定降维个数/主成分个数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips:"><span class="toc-number">1.5.</span> <span class="toc-text">Tips:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.6.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="PCA降维(信号处理领域也叫KLT变换)_">PCA降维(信号处理领域也叫KLT变换)  <img src="/img/196.jpg" class="img-topic"></h1>
+<h2 id="PCA_与_Linear_Regression_的区别：">PCA 与 Linear Regression 的区别：</h2>
+<ol>
+<li>PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  </li>
+<li>more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2,…,xn}投影到这个surface后使得<strong>各点间variance最大</strong>（跟y没有关系，是寻找最能够表现这些feature的一个平面）；而Linear Regression是给出{x1,x2,…,xn}，希望根据x去预测y，所以进行回归。   <a id="more"></a>    </li>
+</ol>
+<h2 id="算法：">算法：</h2>
+<ol>
+<li>计算各个feature的平均值，计μj ;（Xj(i)表示第i个样本的第j维特征的value）<br>μj = Σm Xj(i)/m  </li>
+<li>将每一个feature scaling：将在不同scale上的feature进行归一化；  </li>
+<li>将特征进行mean normalization<br>令Xj(i)= (Xj(i)-μj)/sj  </li>
+<li>求n×n的协方差矩阵Σ：<br><img src="/img/QQ截图20150614125841.jpg" alt=""></li>
+<li>根据SVD求取特征值和特征向量：<br>[U,S,V] = SVD（Σ）  </li>
+<li>按特征值从大到小排列，重新组织U<br>如果使用matlab的svd求得特征值，就可以直接跳过这步了，因为该函数返回值中，奇异值在S的对角线上按照降序排列。否则的话应进行排序，并按照该次序找到对应的特征向量重新排列。  </li>
+<li>选择k个分量<br>按照第五、六步中讲的svd过后，我们得到了一个n×n的矩阵Σ和U，这时，我们就需要从U中选出k个最重要的分量；即选择前k个特征向量，即为Ureduce,<br>该矩阵大小为n×k<br><img src="/img/QQ截图20150614130119.jpg" alt=""><br>这样对于一个n维向量x，就可以降维到k维向量z了：<br><img src="/img/QQ截图20150614125857.jpg" alt=""></li>
+</ol>
+<h2 id="从压缩数据中恢复原数据">从压缩数据中恢复原数据</h2>
+<p>我们已经知道，可以根据z(i) = Ureduce’× x(i) 将n维向量x降维到k维向量z，那么有时我们需要恢复n维向量，怎么做呢？<br>由于Ureduce是正交矩阵（下面Ureduce简记为U），即U’ = U-1, 所以<br>xapprox = (U’)-1×z = (U-1)-1×z = Uz<br>(PS：这里的逆操作为伪逆操作)<br>注意：这里恢复出的xapprox并不是原先的x，而是向量x的近似值。  </p>
+<h2 id="怎样决定降维个数/主成分个数">怎样决定降维个数/主成分个数</h2>
+<p>首先从一个general一点的思路去想呢，我们是希望，选出主成分之后进行数据分析，不会造成大量特征的丢失，也就是说可以用下式的error ratio表示经过压缩后的性能如何。<br>  <img src="/img/QQ截图20150614125908.jpg" alt=""><br>然后呢，我们定义一个threshold（10% for example）,如果error ratio&lt;threshold，说明这样选取主成分是可以接受的，从数学上可以证明，也可以用下式进行k的合理选取<br>  <img src="/img/QQ截图20150614125918.jpg" alt=""></p>
+<h2 id="Tips:">Tips:</h2>
+<ol>
+<li>PCA降维并不能阻止训练结果的过拟合，这个效果往往很小，阻止过拟合还是需要添加规则项。  </li>
+</ol>
+<h2 id="参考：">参考：</h2>
+<p>  <a href="http://blog.csdn.net/abcjennifer/article/details/8002329" target="_blank" rel="external">Stanford机器学习—-第十讲. 数据降维</a><br>  <a href="http://deeplearning.stanford.edu/wiki/index.php/UFLDL教程" target="_blank" rel="external">UFLDL教程</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"1735208065"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2009886" charset="utf-8"></script>      
+
+	 </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/06/11/ML-CNN-and-SAE/" title="ML学习笔记之————SAE稀疏自动编码机和CNN卷积神经网络">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ML学习笔记之————SAE稀疏自动编码机和CNN卷积神经网络</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/06/11/ML-Neutual-net/"  title="ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式">
+ <strong>下一篇：</strong><br/> 
+ <span>ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/06/11/ML-PCA-or-KLT-transform/" data-title="ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）" data-url="/2015/06/11/ML-PCA-or-KLT-transform/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PCA降维(信号处理领域也叫KLT变换)_"><span class="toc-number">1.</span> <span class="toc-text">PCA降维(信号处理领域也叫KLT变换)  </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PCA_与_Linear_Regression_的区别："><span class="toc-number">1.1.</span> <span class="toc-text">PCA 与 Linear Regression 的区别：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#算法："><span class="toc-number">1.2.</span> <span class="toc-text">算法：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#从压缩数据中恢复原数据"><span class="toc-number">1.3.</span> <span class="toc-text">从压缩数据中恢复原数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#怎样决定降维个数/主成分个数"><span class="toc-number">1.4.</span> <span class="toc-text">怎样决定降维个数/主成分个数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips:"><span class="toc-number">1.5.</span> <span class="toc-text">Tips:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.6.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
+			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
+		
+			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/categories/三维配准/" title="三维配准">三维配准<sup>1</sup></a></li>
+		
+			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
+		
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
+			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
+		
+			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
+		
+			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
+		
+			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://ibruce.info/2013/11/22/hexo-your-blog/" target="_blank" title="不如">不如</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Guohao in CASIA. <br/>
+			I&#39;ll share my learning experience with u at this blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1735208065" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/ghx0x0" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:hao.guo@ia.ac.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Pacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="GH">GH</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ghx0x0"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+  </body>
+</html>

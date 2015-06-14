@@ -1,0 +1,653 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>DSP 上电之后是如何运行的 | GH‘s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="GH">
+    
+    <meta name="description" content="一个DSP的工程中往往有很多的.c执行文件，但是具体的执行顺序单从程序上的互相调用来看是理不清楚的，下面以一个具体的工程为例对DSP中工程的执行顺序进行分析，帮助更好的理解其整个芯片的运行机制。如有理解不对之处，敬请批评指正。">
+    
+    
+    <meta name="description" content="一个DSP的工程中往往有很多的.c执行文件，但是具体的执行顺序单从程序上的互相调用来看是理不清楚的，下面以一个具体的工程为例对DSP中工程的执行顺序进行分析，帮助更好的理解其整个芯片的运行机制。如有理解不对之处，敬请批评指正。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DSP 上电之后是如何运行的">
+<meta property="og:url" content="/2015/03/18/DSP-running-scheduling/">
+<meta property="og:site_name" content="GH‘s blog">
+<meta property="og:description" content="一个DSP的工程中往往有很多的.c执行文件，但是具体的执行顺序单从程序上的互相调用来看是理不清楚的，下面以一个具体的工程为例对DSP中工程的执行顺序进行分析，帮助更好的理解其整个芯片的运行机制。如有理解不对之处，敬请批评指正。">
+<meta property="og:image" content="/img/光影魔术手拼图.jpg">
+<meta property="og:image" content="/img/QQ截图20150318153906.bmp">
+<meta property="og:image" content="/img/QQ截图20150318160656.bmp">
+<meta property="og:image" content="/img/DSPTSK.jpg">
+<meta property="og:image" content="/img/QQ截图20150318151106.bmp">
+<meta property="og:image" content="/img/DSPnetwork.jpg">
+<meta property="og:image" content="/img/DSP运行机制.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DSP 上电之后是如何运行的">
+<meta name="twitter:description" content="一个DSP的工程中往往有很多的.c执行文件，但是具体的执行顺序单从程序上的互相调用来看是理不清楚的，下面以一个具体的工程为例对DSP中工程的执行顺序进行分析，帮助更好的理解其整个芯片的运行机制。如有理解不对之处，敬请批评指正。">
+
+
+    
+    <link rel="alternative" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="GH‘s blog" title="GH‘s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="GH‘s blog">GH‘s blog</a></h1>
+				<h2 class="blog-motto">尚未被开垦的小帅哥</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">首页</a></li>
+					
+						<li><a href="/archives">存档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li> <a title="把这个链接拖到你的Chrome收藏夹工具栏中" href='javascript:(function() {
+						function c() {
+							var e = document.createElement("link");
+							e.setAttribute("type", "text/css");
+							e.setAttribute("rel", "stylesheet");
+							e.setAttribute("href", f);
+							e.setAttribute("class", l);
+							document.body.appendChild(e)
+						}
+					 
+						function h() {
+							var e = document.getElementsByClassName(l);
+							for (var t = 0; t < e.length; t++) {
+								document.body.removeChild(e[t])
+							}
+						}
+					 
+						function p() {
+							var e = document.createElement("div");
+							e.setAttribute("class", a);
+							document.body.appendChild(e);
+							setTimeout(function() {
+								document.body.removeChild(e)
+							}, 100)
+						}
+					 
+						function d(e) {
+							return {
+								height : e.offsetHeight,
+								width : e.offsetWidth
+							}
+						}
+					 
+						function v(i) {
+							var s = d(i);
+							return s.height > e && s.height < n && s.width > t && s.width < r
+						}
+					 
+						function m(e) {
+							var t = e;
+							var n = 0;
+							while (!!t) {
+								n += t.offsetTop;
+								t = t.offsetParent
+							}
+							return n
+						}
+					 
+						function g() {
+							var e = document.documentElement;
+							if (!!window.innerWidth) {
+								return window.innerHeight
+							} else if (e && !isNaN(e.clientHeight)) {
+								return e.clientHeight
+							}
+							return 0
+						}
+					 
+						function y() {
+							if (window.pageYOffset) {
+								return window.pageYOffset
+							}
+							return Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+						}
+					 
+						function E(e) {
+							var t = m(e);
+							return t >= w && t <= b + w
+						}
+					 
+						function S() {
+							var e = document.createElement("audio");
+							e.setAttribute("class", l);
+							e.src = i;
+							e.loop = false;
+							e.addEventListener("canplay", function() {
+								setTimeout(function() {
+									x(k)
+								}, 500);
+								setTimeout(function() {
+									N();
+									p();
+									for (var e = 0; e < O.length; e++) {
+										T(O[e])
+									}
+								}, 15500)
+							}, true);
+							e.addEventListener("ended", function() {
+								N();
+								h()
+							}, true);
+							e.innerHTML = " <p>If you are reading this, it is because your browser does not support the audio element. We recommend that you get a new browser.</p> <p>";
+							document.body.appendChild(e);
+							e.play()
+						}
+					 
+						function x(e) {
+							e.className += " " + s + " " + o
+						}
+					 
+						function T(e) {
+							e.className += " " + s + " " + u[Math.floor(Math.random() * u.length)]
+						}
+					 
+						function N() {
+							var e = document.getElementsByClassName(s);
+							var t = new RegExp("\\b" + s + "\\b");
+							for (var n = 0; n < e.length; ) {
+								e[n].className = e[n].className.replace(t, "")
+							}
+						}
+					 
+						var e = 30;
+						var t = 30;
+						var n = 350;
+						var r = 350;
+						var i = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+						var s = "mw-harlem_shake_me";
+						var o = "im_first";
+						var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
+						var a = "mw-strobe_light";
+						var f = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+						var l = "mw_added_css";
+						var b = g();
+						var w = y();
+						var C = document.getElementsByTagName("*");
+						var k = null;
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								if (E(A)) {
+									k = A;
+									break
+								}
+							}
+						}
+						if (A === null) {
+							console.warn("Could not find a node of the right size. Please try a different page.");
+							return
+						}
+						c();
+						S();
+						var O = [];
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								O.push(A)
+							}
+						}
+					})()    '>点我点我^_^</a> </li>
+					<li>
+ 					
+						<form class="search" action="http://www.baidu.com/" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/03/18/DSP-running-scheduling/" title="DSP 上电之后是如何运行的" itemprop="url">DSP 上电之后是如何运行的</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
+		
+  <p class="article-time">
+    <time datetime="2015-03-18T08:15:06.000Z" itemprop="datePublished"> 发表于 3月 18 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p><img src="/img/光影魔术手拼图.jpg" class="img-topic">      一个DSP的工程中往往有很多的.c执行文件，但是具体的执行顺序单从程序上的互相调用来看是理不清楚的，下面以一个具体的工程为例对DSP中工程的执行顺序进行分析，帮助更好的理解其整个芯片的运行机制。如有理解不对之处，敬请批评指正。<a id="more"></a>  </p>
+<p>如图1所示，这是一个具体的在DSP上实现图像特征提取的工程，共有14个.c执行文件，我们具体来细看一下他们的运行机制。</p>
+<p><img src="/img/QQ截图20150318153906.bmp" alt=""></p>
+<p>打开BIOS Config，先在System中查看全局设置，其中有一个名为User Init Function的项目，这标志着整个工程将从dm642_init开始执行。这个函数主要是对DSP芯片进行模块和寄存器的初始化。</p>
+<p><img src="/img/QQ截图20150318160656.bmp" alt=""></p>
+<p>在所有的BIOS模块完成初始化后，调用main函数Tcpip_loopbackmain.c。Main函数中是对需要用到的外围设备进行初始化，如EMIFA等，用于FPGA和DSP的通信。 </p>
+<p>之后Main函数将控制权还给BIOS，我们继续查看BIOS Config下的Scheduling选项，在TSK-Task Manager任务管理项目下，可以看到有三个任务，并且具有不同的优先级。其实每一个任务都是一个线程。TSK_idle的优先级被系统固定为0，当没有其他的任务时，程序会在它的函数IDL_F_loop中持续循环。TSK_input和TSK_network的优先级都被我们设置为5，根据优先级的高低程序会进入其所在的任务函数中继续执行。由于此处TSK_input和TSK_network的优先级是相同的，那么当控制权还给BIOS的时候，由于每次上电后硬件软件的不同差异所以可能导致第一次执行的不是一个固定的函数，而有可能是这两个任务的任务函数(线程)的任意一个。  </p>
+<p><img src="/img/DSPTSK.jpg" alt=""></p>
+<p>当TSK_input抢占到了执行权的时候，接下来执行它的任务函数(线程)tskVideoInput.c，在这个文件中可以看到利用while死循环来持续执行该线程，每一次循环中都调用image_and_keypoints()来完成图像信息的处理。这一函数位于image_and_keypoints.c文件中。</p>
+<p><img src="/img/QQ截图20150318151106.bmp" alt=""></p>
+<p>当TSK_network抢占到了执行权的时候，它的任务函数是Networkdeal，它位于NetworkSetting.c中。该文件不像tskVideoInput.c那样本身创建死循环来执行线程，而是首先对网口通信进行了相关的配置，在最后它新创建了一个新的任务tskNetworkTx，位于tskNetwork.c中。在tskNetwork.c我们可以看到利用for构成的死循环完成DSP与上位机的网口通讯工作。</p>
+<p><img src="/img/DSPnetwork.jpg" alt=""></p>
+<p>但是TSK_input和TSK_network所代表的图像处理任务和网口传输任务是怎么互相切换的呢？我们可以看到无论是在图像处理任务的while死循环还是网口传输任务的for死循环中，都存在SCOM在任务之间来回传送消息，所以当图像处理完一帧时，该循环等待SCOM返回的消息。此时切换到网口传输任务中，开始执行网口数据的传输，当传完后把消息压到SCOM的队列并等待图像处理任务的消息，如此往复就实现了2个线程之间的互相切换。</p>
+<p>剩下的seedvpm642_vcapparamsPAL_EMBEDDED.C和vportdis.c是对DSP进行的一些配置，而timer.c和capture.c则封装了计时和获取图像的一些函数，在这个工程里并没有用到。</p>
+<p>综合来看，整个DSP运行架构可以近似看为以下的流程图。<br><img src="/img/DSP运行机制.jpg" alt=""></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/FPGA/">FPGA</a>►<a class="article-category-link" href="/categories/FPGA/DSP/">DSP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/嵌入式/">嵌入式</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"1735208065"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2009886" charset="utf-8"></script>      
+
+	 </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/04/08/FPGA-Siginal-Tap-and-Nios-programmer/" title="笔记——设置FPGA的Siginal Tap和用Nios烧录程序">
+  <strong>上一篇：</strong><br/>
+  <span>
+  笔记——设置FPGA的Siginal Tap和用Nios烧录程序</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/02/25/cuda-vs2010-configure-cuda/"  title="CUDA配置——cpp文件对cu文件的调用">
+ <strong>下一篇：</strong><br/> 
+ <span>CUDA配置——cpp文件对cu文件的调用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/03/18/DSP-running-scheduling/" data-title="DSP 上电之后是如何运行的" data-url="/2015/03/18/DSP-running-scheduling/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
+			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
+		
+			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/categories/三维配准/" title="三维配准">三维配准<sup>1</sup></a></li>
+		
+			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
+		
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
+			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
+		
+			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
+		
+			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
+		
+			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://ibruce.info/2013/11/22/hexo-your-blog/" target="_blank" title="不如">不如</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Guohao in CASIA. <br/>
+			I&#39;ll share my learning experience with u at this blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1735208065" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/ghx0x0" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:hao.guo@ia.ac.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Pacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="GH">GH</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ghx0x0"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+  </body>
+</html>

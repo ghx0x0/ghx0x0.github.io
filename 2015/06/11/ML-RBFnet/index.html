@@ -1,0 +1,661 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ML学习笔记之————RBF径向基网络 | GH‘s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="GH">
+    
+    <meta name="description" content="径向基函数  
+在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。">
+    
+    
+    <meta name="description" content="径向基函数  
+在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ML学习笔记之————RBF径向基网络">
+<meta property="og:url" content="/2015/06/11/ML-RBFnet/">
+<meta property="og:site_name" content="GH‘s blog">
+<meta property="og:description" content="径向基函数  
+在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。">
+<meta property="og:image" content="/img/196.jpg">
+<meta property="og:image" content="/img/QQ截图20150614121956.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122010.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122027.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122035.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122113.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122119.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122200.jpg">
+<meta property="og:image" content="/img/QQ截图20150614122208.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ML学习笔记之————RBF径向基网络">
+<meta name="twitter:description" content="径向基函数  
+在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。">
+
+
+    
+    <link rel="alternative" href="/atom.xml" title="GH‘s blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="GH‘s blog" title="GH‘s blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="GH‘s blog">GH‘s blog</a></h1>
+				<h2 class="blog-motto">尚未被开垦的小帅哥</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">首页</a></li>
+					
+						<li><a href="/archives">存档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li> <a title="把这个链接拖到你的Chrome收藏夹工具栏中" href='javascript:(function() {
+						function c() {
+							var e = document.createElement("link");
+							e.setAttribute("type", "text/css");
+							e.setAttribute("rel", "stylesheet");
+							e.setAttribute("href", f);
+							e.setAttribute("class", l);
+							document.body.appendChild(e)
+						}
+					 
+						function h() {
+							var e = document.getElementsByClassName(l);
+							for (var t = 0; t < e.length; t++) {
+								document.body.removeChild(e[t])
+							}
+						}
+					 
+						function p() {
+							var e = document.createElement("div");
+							e.setAttribute("class", a);
+							document.body.appendChild(e);
+							setTimeout(function() {
+								document.body.removeChild(e)
+							}, 100)
+						}
+					 
+						function d(e) {
+							return {
+								height : e.offsetHeight,
+								width : e.offsetWidth
+							}
+						}
+					 
+						function v(i) {
+							var s = d(i);
+							return s.height > e && s.height < n && s.width > t && s.width < r
+						}
+					 
+						function m(e) {
+							var t = e;
+							var n = 0;
+							while (!!t) {
+								n += t.offsetTop;
+								t = t.offsetParent
+							}
+							return n
+						}
+					 
+						function g() {
+							var e = document.documentElement;
+							if (!!window.innerWidth) {
+								return window.innerHeight
+							} else if (e && !isNaN(e.clientHeight)) {
+								return e.clientHeight
+							}
+							return 0
+						}
+					 
+						function y() {
+							if (window.pageYOffset) {
+								return window.pageYOffset
+							}
+							return Math.max(document.documentElement.scrollTop, document.body.scrollTop)
+						}
+					 
+						function E(e) {
+							var t = m(e);
+							return t >= w && t <= b + w
+						}
+					 
+						function S() {
+							var e = document.createElement("audio");
+							e.setAttribute("class", l);
+							e.src = i;
+							e.loop = false;
+							e.addEventListener("canplay", function() {
+								setTimeout(function() {
+									x(k)
+								}, 500);
+								setTimeout(function() {
+									N();
+									p();
+									for (var e = 0; e < O.length; e++) {
+										T(O[e])
+									}
+								}, 15500)
+							}, true);
+							e.addEventListener("ended", function() {
+								N();
+								h()
+							}, true);
+							e.innerHTML = " <p>If you are reading this, it is because your browser does not support the audio element. We recommend that you get a new browser.</p> <p>";
+							document.body.appendChild(e);
+							e.play()
+						}
+					 
+						function x(e) {
+							e.className += " " + s + " " + o
+						}
+					 
+						function T(e) {
+							e.className += " " + s + " " + u[Math.floor(Math.random() * u.length)]
+						}
+					 
+						function N() {
+							var e = document.getElementsByClassName(s);
+							var t = new RegExp("\\b" + s + "\\b");
+							for (var n = 0; n < e.length; ) {
+								e[n].className = e[n].className.replace(t, "")
+							}
+						}
+					 
+						var e = 30;
+						var t = 30;
+						var n = 350;
+						var r = 350;
+						var i = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake.mp3";
+						var s = "mw-harlem_shake_me";
+						var o = "im_first";
+						var u = ["im_drunk", "im_baked", "im_trippin", "im_blown"];
+						var a = "mw-strobe_light";
+						var f = "//s3.amazonaws.com/moovweb-marketing/playground/harlem-shake-style.css";
+						var l = "mw_added_css";
+						var b = g();
+						var w = y();
+						var C = document.getElementsByTagName("*");
+						var k = null;
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								if (E(A)) {
+									k = A;
+									break
+								}
+							}
+						}
+						if (A === null) {
+							console.warn("Could not find a node of the right size. Please try a different page.");
+							return
+						}
+						c();
+						S();
+						var O = [];
+						for (var L = 0; L < C.length; L++) {
+							var A = C[L];
+							if (v(A)) {
+								O.push(A)
+							}
+						}
+					})()    '>点我点我^_^</a> </li>
+					<li>
+ 					
+						<form class="search" action="http://www.baidu.com/" target="_blank">
+							<label>Search</label>
+						<input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
+						</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/06/11/ML-RBFnet/" title="ML学习笔记之————RBF径向基网络" itemprop="url">ML学习笔记之————RBF径向基网络</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
+		
+  <p class="article-time">
+    <time datetime="2015-06-11T14:15:53.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#径向基函数_"><span class="toc-number">1.</span> <span class="toc-text">径向基函数  </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#径向基网络"><span class="toc-number">1.1.</span> <span class="toc-text">径向基网络</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RBF神经网络的设计和求解"><span class="toc-number">1.2.</span> <span class="toc-text">RBF神经网络的设计和求解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips:"><span class="toc-number">1.3.</span> <span class="toc-text">Tips:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.4.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h1 id="径向基函数_">径向基函数  <img src="/img/196.jpg" class="img-topic"></h1>
+<p>在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。  <a id="more"></a> 例如高斯径向基函数：<br>  <img src="/img/QQ截图20150614121956.jpg" alt=""><br>当年径向基函数的诞生主要是为了解决多变量插值的问题。可以看下面的图。具体的话是先在每个样本上面放一个基函数，图中每个蓝色的点是一个样本，然后中间那个图中绿色虚线对应的，就表示的是每个训练样本对应一个高斯函数（高斯函数中心就是样本点）。然后假设真实的拟合这些训练数据的曲线是蓝色的那根（最右边的图），如果我们有一个新的数据x1，我们想知道它对应的f(x1)是多少，也就是a点的纵坐标是多少。那么由图可以看到，a点的纵坐标等于b点的纵坐标加上c点的纵坐标。而b的纵坐标是第一个样本点的高斯函数的值乘以一个大点权值得到的，c的纵坐标是第二个样本点的高斯函数的值乘以另一个小点的权值得到。而其他样本点的权值全是0，因为我们要插值的点x1在第一和第二个样本点之间，远离其他的样本点，那么插值影响最大的就是离得近的点，离的远的就没什么贡献了。所以x1点的函数值由附近的b和c两个点就可以确定了。拓展到任意的新的x，这些红色的高斯函数乘以一个权值后再在对应的x地方加起来，就可以完美的拟合真实的函数曲线了。<br>  <img src="/img/QQ截图20150614122010.jpg" alt="">  </p>
+<h2 id="径向基网络">径向基网络</h2>
+<p>到了1988年， Moody和 Darken提出了一种神经网络结构，即RBF神经网络，属于前向神经网络类型，它能够以任意精度逼近任意连续函数，特别适合于解决分类问题。<br>  <img src="/img/QQ截图20150614122027.jpg" alt=""><br>RBF网络的结构与多层前向网络类似，它是一种三层前向网络。输入层由信号源结点组成；第二层为隐含层，隐单元数视所描述问题的需要而定，隐单元的变换函数是RBF径向基函数，它是对中心点径向对称且衰减的非负非线性函数；第三层为输出层，它对输入模式的作用作出响应。从输人空间到隐含层空间的变换是非线性的，而从隐含层空间到输出层空间变换是线性的。<br>  <img src="/img/QQ截图20150614122035.jpg" alt=""><br>RBF网络的基本思想是：用RBF作为隐单元的“基”构成隐含层空间，这样就可将输入矢量直接（即不需要通过权连接）映射到隐空间。换句话来说，RBF网络的隐层的功能就是将低维空间的输入通过非线性函数映射到一个高维空间。然后再在这个高维空间进行曲线的拟合。它等价于在一个隐含的高维空间寻找一个能最佳拟合训练数据的表面。这点与普通的多层感知机MLP是不同的。<br>当RBF的中心点确定以后，这种映射关系也就确定了。而隐含层空间到输出空间的映射是线性的，即网络的输出是隐单元输出的线性加权和，此处的权即为网络可调参数。由此可见，从总体上看，网络由输人到输出的映射是非线性的，而网络输出对可调参数而言却又是线性的。这样网络的权就可由线性方程组直接解出，从而大大加快学习速度并避免局部极小问题。 </p>
+<h2 id="RBF神经网络的设计和求解">RBF神经网络的设计和求解</h2>
+<p>RBF的设计主要包括两个方面，一个是结构设计，也就是说隐藏层含有几个节点合适。另一个就是参数设计，也就是对网络各参数进行求解。由上面的输入到输出的网络映射函数公式可以看到，网络的参数主要包括三种：径向基函数的中心、方差和隐含层到输出层的权值。到目前为止，出现了很多求解这三种参数的方法，主要可以分为以下两大类：</p>
+<ol>
+<li>方法一：<br>通过非监督方法得到径向基函数的中心和方差，通过监督方法（最小均方误差）得到隐含层到输出层的权值。具体如下：<br>（1）在训练样本集中随机选择h个样本作为h个径向基函数的中心。更好的方法是通过聚类，例如K-means聚类得到h个聚类中心，将这些聚类中心当成径向基函数的h个中心。<br>（2）RBF神经网络的基函数为高斯函数时，方差可由下式求解：<br><img src="/img/QQ截图20150614122113.jpg" alt=""><br>式中cmax 为所选取中心之间的最大距离，h是隐层节点的个数。扩展常数这么计算是为了避免径向基函数太尖或太平。<br>（3）隐含层至输出层之间神经元的连接权值可以用最小均方误差LMS直接计算得到，计算公式如下：（计算伪逆）（d是我们期待的输出值）Ф是Green函数。<br><img src="/img/QQ截图20150614122119.jpg" alt=""><br>第一种方法在Matlab中也提供了一种改进版（呵呵，个人觉得，大家可以在Matlab中运行open newrb查看下源代码）。Matlab提供的一个函数是newrb()。它有个技能就是可以自动增加网络的隐层神经元数目直到均方差满足我们要求的精度或者神经元数数目达到最大（也就是我们提供的样本数目，当神经元数目和我们的样本数目一致时，rbf网络此时的均方误差为0）为止。它使用方法也能简单：<br>rbf = newrb(train_x, train_y);<br>output = rbf(test_x);<br>直接把训练样本给它就可以得到一个rbf网络了。然后我们把输入给它就可以得到网络的输出了。  </li>
+<li>方法二：<br>采用监督学习算法对网络所有的参数（径向基函数的中心、方差和隐含层到输出层的权值）进行训练。主要是对代价函数（均方误差）进行梯度下降，然后修正每个参数。具体如下：<br>（1）随机初始化径向基函数的中心、方差和隐含层到输出层的权值。当然了，也可以选用方法一中的（1）来初始化径向基函数的中心。<br>（2）通过梯度下降来对网络中的三种参数都进行监督训练优化。代价函数是网络输出和期望输出的均方误差：<br><img src="/img/QQ截图20150614122200.jpg" alt=""><br>然后每次迭代，在误差梯度的负方向以一定的学习率调整参数。<br><img src="/img/QQ截图20150614122208.jpg" alt="">  </li>
+</ol>
+<h2 id="Tips:">Tips:</h2>
+<ol>
+<li>梯度下降计算公式中为什么是减号而不是加号?<br>这要先理解梯度的定义。梯度指的是随着自变量增加，因变量的变化方向。因此，当梯度为正的时候，需要减号将自变量朝着因变量减少的方向变化。  </li>
+<li>RBF神经网络和SVM支持向量机的区别？<br>RBF是一种显式的映射，而SVM是black box。RBF的核函数中心的个数是已知的或是指定的，而SVM的中心数是所有的样本个数，只不过只有支持向量才起作用，不是支持向量的权重ai为0。  </li>
+</ol>
+<h2 id="参考：">参考：</h2>
+<p>  <a href="http://blog.csdn.net/zouxy09/article/details/13297881" target="_blank" rel="external">径向基网络（RBF network）之BP监督训练</a><br>  <a href="http://www.cnblogs.com/zhangchaoyang/articles/2591663.html" target="_blank" rel="external">径向基函数（RBF）神经网络</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	<div class="share-jiathis">
+	  
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_googleplus"></a>
+	<a class="jiathis_button_douban"></a>
+	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"1735208065"},hideMore:false}
+    
+  </script> 
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2009886" charset="utf-8"></script>      
+
+	 </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/06/11/ML-Neutual-net/" title="ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式">
+  <strong>上一篇：</strong><br/>
+  <span>
+  ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2015/06/11/ML-SVM/"  title="ML学习笔记之————SVM">
+ <strong>下一篇：</strong><br/> 
+ <span>ML学习笔记之————SVM
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/06/11/ML-RBFnet/" data-title="ML学习笔记之————RBF径向基网络" data-url="/2015/06/11/ML-RBFnet/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#径向基函数_"><span class="toc-number">1.</span> <span class="toc-text">径向基函数  </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#径向基网络"><span class="toc-number">1.1.</span> <span class="toc-text">径向基网络</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RBF神经网络的设计和求解"><span class="toc-number">1.2.</span> <span class="toc-text">RBF神经网络的设计和求解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tips:"><span class="toc-number">1.3.</span> <span class="toc-text">Tips:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.4.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
+			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
+		
+			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/categories/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/categories/三维配准/" title="三维配准">三维配准<sup>1</sup></a></li>
+		
+			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
+		
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
+			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
+		
+			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
+		
+			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
+		
+			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
+		
+			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://ibruce.info/2013/11/22/hexo-your-blog/" target="_blank" title="不如">不如</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  <div class="weibo">
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=0&uid=1735208065&verifier=1448dc03&dpc=1"></iframe>
+</div>
+
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Guohao in CASIA. <br/>
+			I&#39;ll share my learning experience with u at this blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/1735208065" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/ghx0x0" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:hao.guo@ia.ac.cn" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Pacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="GH">GH</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"ghx0x0"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+  </body>
+</html>

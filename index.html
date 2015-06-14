@@ -230,25 +230,25 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/02/25/cuda-vs2010-configure-cuda/" title="CUDA配置——cpp文件对cu文件的调用" itemprop="url">CUDA配置——cpp文件对cu文件的调用</a>
+      <a href="/2015/06/14/Tracking-Compressed-tracking/" title="Tracking————Compressed tracking压缩跟踪" itemprop="url">Tracking————Compressed tracking压缩跟踪</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-02-25T06:50:54.000Z" itemprop="datePublished"> 发表于 2月 25 2015</time>
+    <time datetime="2015-06-14T06:28:23.000Z" itemprop="datePublished"> 发表于 6月 14 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p>Cuda极大程度的方便了我们利用GPU并行处理来加快自己程序的运行速度，<img src="/img/20130712090750-2146038257.jpg" class="img-topic">但是大多情况下我们的程序是极为庞大的一个项目，只是利用cuda来加快其中某一块算法的运行效率，所以很多情况下是cpp文件来调用cu中的kernel函数。虽然cuda5.0之后可以直接从vs中生成现成的cuda项目，但是像这种通过cpp来调用cu文件的项目还是需要我们自己来进行配置的。
+        <p>压缩跟踪算法的核心主要是通过一个满足压缩感知约束条件的矩阵R把高维图像特征映射到低维，<img src="/img/CT-tracking.jpg" class="img-topic">  并通过一个朴素贝叶斯分类器进行判别。作者的巧妙之处是找到了一个非常稀疏的这样一个矩阵R。  
         
         
         <p class="article-more-link">
           
-            <a href="/2015/02/25/cuda-vs2010-configure-cuda/#more">Read More</a>
+            <a href="/2015/06/14/Tracking-Compressed-tracking/#more">Read More</a>
           
        </p>
     </div>
@@ -257,13 +257,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/cuda/">cuda</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>►<a class="article-category-link" href="/categories/Machine-Learning/Tracking/">Tracking</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/cuda/">cuda</a>
+  <span></span> <a href="/tags/Computer-vision/">Computer vision</a>
   </div>
 
 </div>
@@ -274,7 +274,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/02/25/cuda-vs2010-configure-cuda/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/02/25/cuda-vs2010-configure-cuda/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/14/Tracking-Compressed-tracking/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/14/Tracking-Compressed-tracking/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -294,26 +294,28 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/02/20/cuda-how-to-set-threads-blocks/" title="原创————CUDA中对线程块的设置" itemprop="url">原创————CUDA中对线程块的设置</a>
+      <a href="/2015/06/14/Tracking-TLD/" title="Tracking————TLD跟踪" itemprop="url">Tracking————TLD跟踪</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-02-20T11:10:47.000Z" itemprop="datePublished"> 发表于 2月 20 2015</time>
+    <time datetime="2015-06-14T06:27:38.000Z" itemprop="datePublished"> 发表于 6月 14 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <ol>
-<li><p>尽量满足每个sm上面的最大线程数。<img src="/img/20130712090750-2146038257.jpg" class="img-topic">  
+        <h1 id="TLD_">TLD  <img src="/img/TLD-tracking.jpg" class="img-topic"></h1>
+<ol>
+<li>TLD的matlab版本是作者的原始版本，而C++版本跟踪效果很差，非常差，粗略估计可能是因为c版本中生成正样本训练数据没有把图像patch进行仿射变换，而是直接输入了200个一模一样的正样本。</li>
+<li>TLD中分为4大模块，检测模块，跟踪模块，综合模块和学习模块。检测模块利用训练的分类器得到检测结果，而跟踪模块则是利用传统的LK光流法进行跟踪 
         
         
         <p class="article-more-link">
           
-            <a href="/2015/02/20/cuda-how-to-set-threads-blocks/#more">Read More</a>
+            <a href="/2015/06/14/Tracking-TLD/#more">Read More</a>
           
        </p>
     </div>
@@ -322,13 +324,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/cuda/">cuda</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>►<a class="article-category-link" href="/categories/Machine-Learning/Tracking/">Tracking</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/cuda/">cuda</a>
+  <span></span> <a href="/tags/Computer-vision/">Computer vision</a>
   </div>
 
 </div>
@@ -339,7 +341,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/02/20/cuda-how-to-set-threads-blocks/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/02/20/cuda-how-to-set-threads-blocks/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/14/Tracking-TLD/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/14/Tracking-TLD/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -359,26 +361,26 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/02/20/cuda-programming-tips/" title="原创————CUDA 编程知识点" itemprop="url">原创————CUDA 编程知识点</a>
+      <a href="/2015/06/14/Tracking-Struct-SVM/" title="Tracking————结构SVM" itemprop="url">Tracking————结构SVM</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-02-20T11:10:25.000Z" itemprop="datePublished"> 发表于 2月 20 2015</time>
+    <time datetime="2015-06-14T06:27:01.000Z" itemprop="datePublished"> 发表于 6月 14 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <ol>
-<li><p>Cuda中对内核函数的调用&lt;&lt;&lt; m , n &gt;&gt;&gt;，m表示线程块的个数，n表示每个线程块的线程数，<img src="/img/20130712090750-2146038257.jpg" class="img-topic">  m个线程块构成一个线程格。M和n可以是一维的或者二维（三维）的，即使n是一维的，那么m也可以是二维的。   
+        <h1 id="Tracking的两大类别">Tracking的两大类别<img src="/img/struct-svm.jpg" class="img-topic"></h1>
+<p>通俗的来说，在tracking领域目前主要分为生成模型和判别模型两个分支，生成模型主要是如何描述目标，也可以理解为如何提取目标的特征来表达目标模型，如稀疏表达，增量PCA，sift特征等都是生成模型，这类分支在生成目标模型后对目标的跟踪是基于匹配思想的，和目标模型匹配度越高的则认为是当前帧的目标。<br>而判别模型则是传统的分类器思想，判断当前目标是（1）或不是（0）目标。目前很多先进的方法是把这两个分支的方法融合到一块。  
         
         
         <p class="article-more-link">
           
-            <a href="/2015/02/20/cuda-programming-tips/#more">Read More</a>
+            <a href="/2015/06/14/Tracking-Struct-SVM/#more">Read More</a>
           
        </p>
     </div>
@@ -387,13 +389,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/cuda/">cuda</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>►<a class="article-category-link" href="/categories/Machine-Learning/Tracking/">Tracking</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/cuda/">cuda</a>
+  <span></span> <a href="/tags/Computer-vision/">Computer vision</a>
   </div>
 
 </div>
@@ -404,7 +406,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/02/20/cuda-programming-tips/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/02/20/cuda-programming-tips/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/14/Tracking-Struct-SVM/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/14/Tracking-Struct-SVM/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -424,26 +426,25 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/" title="原创————CUDA中SM对线程块的调度" itemprop="url">原创————CUDA中SM对线程块的调度</a>
+      <a href="/2015/06/14/Sift-LOG-and-DOG/" title="Sift算法中为什么用DoG来近似LoG" itemprop="url">Sift算法中为什么用DoG来近似LoG</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-02-20T10:38:39.000Z" itemprop="datePublished"> 发表于 2月 20 2015</time>
+    <time datetime="2015-06-14T06:26:40.000Z" itemprop="datePublished"> 发表于 6月 14 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <h1 id="sm流处理器簇对blocks的调度策略">sm流处理器簇对blocks的调度策略<img src="/img/20130712090750-2146038257.jpg" class="img-topic"></h1>
-<p>在cuda中，GPU中的SM（GTX650M有2个sm处理器）被GPU调度器把线程块逐个分配到SM上，每个SM同时处理这个被分配的线程块，但是每次每个时刻都只能处理一个warp线程束，由于有时会存在内存读取等操作导致等待，那么SM会转而处理其他的warp来掩盖这个延迟。
+        <p>DoG是LOG的近似，通过对不同尺度的高斯图像进行卷积后，把相连尺度图像相减，即可得到LOG的近似。但是在Sift算法中使用DOG来近似LOG，虽然多做了一次尺度的高斯卷积，用相减近似，但是仍旧比LOG节省很多计算资源。   
         
         
         <p class="article-more-link">
           
-            <a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/#more">Read More</a>
+            <a href="/2015/06/14/Sift-LOG-and-DOG/#more">Read More</a>
           
        </p>
     </div>
@@ -452,13 +453,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/cuda/">cuda</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>►<a class="article-category-link" href="/categories/Machine-Learning/Tracking/">Tracking</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/cuda/">cuda</a>
+  <span></span> <a href="/tags/Computer-vision/">Computer vision</a>
   </div>
 
 </div>
@@ -469,7 +470,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/02/20/cuda——how-the-SM-manage-the-threads-blocks/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/14/Sift-LOG-and-DOG/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/14/Sift-LOG-and-DOG/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -489,25 +490,26 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/01/19/FPGA-first-intro-and-tips/" title="原创————FPGA编程记录" itemprop="url">原创————FPGA编程记录</a>
+      <a href="/2015/06/11/ML-Navie-Bayesian-Model/" title="ML学习笔记之————朴素贝叶斯（Navie Bayesian Model）分类器" itemprop="url">ML学习笔记之————朴素贝叶斯（Navie Bayesian Model）分类器</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-01-19T12:25:27.000Z" itemprop="datePublished"> 发表于 1月 19 2015</time>
+    <time datetime="2015-06-11T14:19:15.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/光影魔术手拼图.jpg" class="img-topic">     之前已经学过了DSP，但是前阵子机缘巧合，得到师兄指点，搞了一下实验室的嵌入式FD6000图像卡（FPGA+DSP6000），下面主要针对新学习的FPGA对其进行简要记录。  
+        <h1 id="朴素贝叶斯分类器">朴素贝叶斯分类器<img src="/img/196.jpg" class="img-topic"></h1>
+<p>贝叶斯分类是一系列分类算法的总称，这类算法均以贝叶斯定理为基础，故统称为贝叶斯分类。朴素贝叶斯算法（Naive Bayesian) 是其中应用最为广泛的分类算法之一。它是一种十分简单的分类算法，叫它朴素贝叶斯分类是因为这种方法的思想真的很朴素，朴素贝叶斯的思想基础是这样的：对于给出的待分类项，求解在此项出现的条件下各个类别出现的概率，哪个最大，就认为此待分类项属于哪个类别。 
         
         
         <p class="article-more-link">
           
-            <a href="/2015/01/19/FPGA-first-intro-and-tips/#more">Read More</a>
+            <a href="/2015/06/11/ML-Navie-Bayesian-Model/#more">Read More</a>
           
        </p>
     </div>
@@ -516,13 +518,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/嵌入式/">嵌入式</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/FPGA/">FPGA</a><a href="/tags/DSP/">DSP</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -533,7 +535,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/01/19/FPGA-first-intro-and-tips/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/01/19/FPGA-first-intro-and-tips/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-Navie-Bayesian-Model/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-Navie-Bayesian-Model/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -553,25 +555,28 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/01/15/SDF-meshing/" title="原创————SDF和marching cubes算法" itemprop="url">原创————SDF和marching cubes算法</a>
+      <a href="/2015/06/11/ML-dropout-maxout-for-cnn/" title="ML学习笔记之————CNN中的Dropout、Dropconnect和Maxout" itemprop="url">ML学习笔记之————CNN中的Dropout、Dropconnect和Maxout</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-01-15T11:34:05.000Z" itemprop="datePublished"> 发表于 1月 15 2015</time>
+    <time datetime="2015-06-11T14:18:29.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20150115194014.jpg" class="img-topic"><br>SDF三维表达仅仅包含对三维数据的表达，而并不是面片最终的表达。SDF是一种隐函数，如果需要对最终面片进行表达，需要通过marching cubes 算法提取各个体素的面片。   
+        <h2 id="Dropout的理解：_">Dropout的理解： <img src="/img/196.jpg" class="img-topic"></h2>
+<ol>
+<li>在训练过程中，随机的使一些神经元输出为0，使其失效，这样有可能可以获得更多的特征表达，每一个神经元不完全依赖于其他的神经元，但是我们还是保留这个权重；  </li>
+<li>从数学平均的角度来理解的话，每一个batchsize的训练，都有不同的激活的神经元来组成网络，每一次迭代的网络都不相同，但是他们是使用了同一个权重。最终结果可以理解为，不同的神经网络做了平均。   
         
         
         <p class="article-more-link">
           
-            <a href="/2015/01/15/SDF-meshing/#more">Read More</a>
+            <a href="/2015/06/11/ML-dropout-maxout-for-cnn/#more">Read More</a>
           
        </p>
     </div>
@@ -580,13 +585,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/三维重建/">三维重建</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/三维/">三维</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -597,7 +602,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/01/15/SDF-meshing/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/01/15/SDF-meshing/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-dropout-maxout-for-cnn/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-dropout-maxout-for-cnn/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -617,25 +622,26 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2015/01/15/mls-intro/" title="原创————MLS平滑和Rusu的RMLS" itemprop="url">原创————MLS平滑和Rusu的RMLS</a>
+      <a href="/2015/06/11/ML-CNN-and-SAE/" title="ML学习笔记之————SAE稀疏自动编码机和CNN卷积神经网络" itemprop="url">ML学习笔记之————SAE稀疏自动编码机和CNN卷积神经网络</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2015-01-15T11:16:57.000Z" itemprop="datePublished"> 发表于 1月 15 2015</time>
+    <time datetime="2015-06-11T14:17:46.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20150115193156.jpg" class="img-topic"><br>MLS是点云领域内比较重要，并且也是用的比较多的平滑方法，Pcl封装了MLS的函数并且可以利用MLS来估算点云的法向，在此基础上，Rusu曾提出更为鲁棒的RMLS算法，可以抑制在sharp边缘处被平滑成光滑的曲面。 
+        <h1 id="SAE稀疏自动编码器">SAE稀疏自动编码器<img src="/img/196.jpg" class="img-topic"></h1>
+<p>自编码神经网络是一种无监督学习算法，它使用了反向传播算法，并让目标值等于输入值。换句话说，它尝试逼近一个恒等函数，从而使得输出y接近于输入x 。恒等函数虽然看上去不太有学习的意义，但是当我们为自编码神经网络加入某些限制，比如限定隐藏神经元的数量，我们就可以从输入数据中发现一些有趣的结构。自编码神经网络通常可以学习出一个跟主元分析（PCA）结果非常相似的输入数据的低维表示。  
         
         
         <p class="article-more-link">
           
-            <a href="/2015/01/15/mls-intro/#more">Read More</a>
+            <a href="/2015/06/11/ML-CNN-and-SAE/#more">Read More</a>
           
        </p>
     </div>
@@ -644,13 +650,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Pcl/">Pcl</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/三维/">三维</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -661,7 +667,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2015/01/15/mls-intro/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/01/15/mls-intro/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-CNN-and-SAE/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-CNN-and-SAE/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -681,25 +687,29 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/12/30/NDT-match/" title="原创————NDT 算法（与ICP对比）和一些常见配准算法" itemprop="url">原创————NDT 算法（与ICP对比）和一些常见配准算法</a>
+      <a href="/2015/06/11/ML-PCA-or-KLT-transform/" title="ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）" itemprop="url">ML学习笔记之————PCA降维（信号处理领域也叫KLT变换）</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2014-12-30T13:07:55.000Z" itemprop="datePublished"> 发表于 12月 30 2014</time>
+    <time datetime="2015-06-11T14:17:24.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20141230213405.jpg" class="img-topic"><br>目前三维配准中用的较多的是ICP迭代算法，需要提供一个较好的初值，同时由于算法本身缺陷，最终迭代结果可能会陷入局部最优。本文介绍的是另一种比较好的配准算法，NDT配准。这个配准算法耗时稳定，跟初值相关不大，初值误差大时，也能很好的纠正过来。  
+        <h1 id="PCA降维(信号处理领域也叫KLT变换)_">PCA降维(信号处理领域也叫KLT变换)  <img src="/img/196.jpg" class="img-topic"></h1>
+<h2 id="PCA_与_Linear_Regression_的区别：">PCA 与 Linear Regression 的区别：</h2>
+<ol>
+<li>PCA衡量的是orthogonal distance, 而linear regression是所有x点对应的真实值y=g(x)与估计值f(x)之间的vertical distance距离  </li>
+<li>more general 的解释：PCA中为的是寻找一个surface，将各feature{x1,x2,…,xn}投影到这个surface后使得<strong>各点间variance最大</strong>（跟y没有关系，是寻找最能够表现这些feature的一个平面）；而Linear Regression是给出{x1,x2,…,xn}，希望根据x去预测y，所以进行回归。   
         
         
         <p class="article-more-link">
           
-            <a href="/2014/12/30/NDT-match/#more">Read More</a>
+            <a href="/2015/06/11/ML-PCA-or-KLT-transform/#more">Read More</a>
           
        </p>
     </div>
@@ -708,13 +718,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/三维配准/">三维配准</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/三维/">三维</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -725,7 +735,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2014/12/30/NDT-match/#comments" class="ds-thread-count comments-count-link" data-thread-key="2014/12/30/NDT-match/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-PCA-or-KLT-transform/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-PCA-or-KLT-transform/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -745,25 +755,27 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/12/30/rusu-doctor-paper/" title="原创————Rusu 博士论文记录" itemprop="url">原创————Rusu 博士论文记录</a>
+      <a href="/2015/06/11/ML-Neutual-net/" title="ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式" itemprop="url">ML学习笔记之————训练阶段过拟合和欠拟合的关系以及基本NN的迭代公式</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2014-12-30T11:46:53.000Z" itemprop="datePublished"> 发表于 12月 30 2014</time>
+    <time datetime="2015-06-11T14:16:49.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20141230205722.jpg" alt=""><br>前面已经简单介绍了PCL和他的开拓者rusu,这篇博文是自己阅读完他的毕业论文后的记录，现给出记录与大家分享，有理解不对的地方可以共同交流。
+        <h2 id="网络模型训练阶段对于欠拟合和过拟合的关系？">网络模型训练阶段对于欠拟合和过拟合的关系？<img src="/img/196.jpg" class="img-topic"></h2>
+<ol>
+<li>任何一个最小二乘均方差cost function都可以表示为bias方和variance和一个噪声的叠加，其中bias值得是最终数据集的预测结果均值和期望结果的偏差，而variance指的是最终所有样本的预测结果，这些结果的方差。我们训练最终需要的效果是尽可能的使bias和variance都很小。 
         
         
         <p class="article-more-link">
           
-            <a href="/2014/12/30/rusu-doctor-paper/#more">Read More</a>
+            <a href="/2015/06/11/ML-Neutual-net/#more">Read More</a>
           
        </p>
     </div>
@@ -772,13 +784,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Pcl/">Pcl</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Pcl/">Pcl</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -789,7 +801,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2014/12/30/rusu-doctor-paper/#comments" class="ds-thread-count comments-count-link" data-thread-key="2014/12/30/rusu-doctor-paper/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-Neutual-net/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-Neutual-net/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -809,25 +821,26 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/11/14/install-pcl-master-for-kinfu/" title="原创————安装带有kinfu的测试版本PCL" itemprop="url">原创————安装带有kinfu的测试版本PCL</a>
+      <a href="/2015/06/11/ML-RBFnet/" title="ML学习笔记之————RBF径向基网络" itemprop="url">ML学习笔记之————RBF径向基网络</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="GH" target="_blank" itemprop="author">GH</a>
 		
   <p class="article-time">
-    <time datetime="2014-11-14T10:59:54.000Z" itemprop="datePublished"> 发表于 11月 14 2014</time>
+    <time datetime="2015-06-11T14:15:53.000Z" itemprop="datePublished"> 发表于 6月 11 2015</time>
     
   </p>
 </header>
     <div class="article-content">
         
-        <p><img src="/img/QQ截图20141114194417.jpg" class="img-topic"><br>这几天看到kinect fusion 的效果后，对其非常感兴趣，于是也想搭建一个kinect fusion 的框架自己玩玩，无奈PCL中kinfu的开源代码一直是测试版本，并没有release发布版，于是只能默默的卸载之前安装的1.7.1版本换上PCL的测试版本。   
+        <h1 id="径向基函数_">径向基函数  <img src="/img/196.jpg" class="img-topic"></h1>
+<p>在说径向基网络之前，先聊下径向基函数（Radical Basis Function，RBF）。径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。  
         
         
         <p class="article-more-link">
           
-            <a href="/2014/11/14/install-pcl-master-for-kinfu/#more">Read More</a>
+            <a href="/2015/06/11/ML-RBFnet/#more">Read More</a>
           
        </p>
     </div>
@@ -836,13 +849,13 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Pcl/">Pcl</a>
+  <a class="article-category-link" href="/categories/Machine-Learning/">Machine Learning</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/Pcl/">Pcl</a>
+  <span></span> <a href="/tags/Machine-Learning/">Machine Learning</a>
   </div>
 
 </div>
@@ -853,7 +866,7 @@
 <div class="comments-count">
 	
 	  	<span></span>
-		<a href="/2014/11/14/install-pcl-master-for-kinfu/#comments" class="ds-thread-count comments-count-link" data-thread-key="2014/11/14/install-pcl-master-for-kinfu/" data-count-type="comments">&nbsp;</a>
+		<a href="/2015/06/11/ML-RBFnet/#comments" class="ds-thread-count comments-count-link" data-thread-key="2015/06/11/ML-RBFnet/" data-count-type="comments">&nbsp;</a>
 	
 </div>
 
@@ -869,7 +882,7 @@
 
 
   <nav id="page-nav" class="clearfix">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
   </nav>
 
 </div>
@@ -884,7 +897,15 @@
 	<p class="asidetitle">分类</p>
 		<ul>
 		
+			<li><a href="/categories/FPGA/DSP/" title="DSP">DSP<sup>2</sup></a></li>
+		
+			<li><a href="/categories/FPGA/" title="FPGA">FPGA<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/" title="Machine Learning">Machine Learning<sup>12</sup></a></li>
+		
 			<li><a href="/categories/Pcl/" title="Pcl">Pcl<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Machine-Learning/Tracking/" title="Tracking">Tracking<sup>4</sup></a></li>
 		
 			<li><a href="/categories/cuda/" title="cuda">cuda<sup>4</sup></a></li>
 		
@@ -894,7 +915,7 @@
 		
 			<li><a href="/categories/三维重建/" title="三维重建">三维重建<sup>1</sup></a></li>
 		
-			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>1</sup></a></li>
+			<li><a href="/categories/嵌入式/" title="嵌入式">嵌入式<sup>0</sup></a></li>
 		
 		</ul>
 </div>
@@ -905,19 +926,25 @@
 	<p class="asidetitle">标签</p>
 		<ul class="clearfix">
 		
+			<li><a href="/tags/Machine-Learning/" title="Machine Learning">Machine Learning<sup>8</sup></a></li>
+		
+			<li><a href="/tags/Computer-vision/" title="Computer vision">Computer vision<sup>4</sup></a></li>
+		
 			<li><a href="/tags/Pcl/" title="Pcl">Pcl<sup>4</sup></a></li>
 		
 			<li><a href="/tags/cuda/" title="cuda">cuda<sup>4</sup></a></li>
+		
+			<li><a href="/tags/嵌入式/" title="嵌入式">嵌入式<sup>3</sup></a></li>
 		
 			<li><a href="/tags/三维/" title="三维">三维<sup>3</sup></a></li>
 		
 			<li><a href="/tags/hexo/" title="hexo">hexo<sup>2</sup></a></li>
 		
-			<li><a href="/tags/DSP/" title="DSP">DSP<sup>1</sup></a></li>
-		
-			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>1</sup></a></li>
-		
 			<li><a href="/tags/github/" title="github">github<sup>1</sup></a></li>
+		
+			<li><a href="/tags/DSP/" title="DSP">DSP<sup>0</sup></a></li>
+		
+			<li><a href="/tags/FPGA/" title="FPGA">FPGA<sup>0</sup></a></li>
 		
 		</ul>
 </div>
