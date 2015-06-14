@@ -274,9 +274,10 @@
 <h2 id="基本神经网络算法：">基本神经网络算法：</h2>
 <ol>
 <li>随机初始化权重；</li>
-<li>Repeat<br>前向传播计算实际输出；<br>根据误差和残差，反向传播更新权重<h2 id="残差和权重更新公式：">残差和权重更新公式：</h2>
-最后一层：  <img src="/img/QQ截图20150614124925.jpg" alt=""><br>中间层<br><img src="/img/QQ截图20150614124944.jpg" alt="">   （j代表层节点个数）<br><img src="/img/QQ截图20150614124949.jpg" alt=""><br><img src="/img/QQ截图20150614125030.jpg" alt=""><br>换句话说, 对于每一层来说，<strong>δ分量都等于后面一层所有的δ加权和</strong>，其中权值就是参数Θ和后一层的激活函数的导数之积。</li>
+<li>Repeat<br>前向传播计算实际输出；<br>根据误差和残差，反向传播更新权重</li>
 </ol>
+<h2 id="残差和权重更新公式：">残差和权重更新公式：</h2>
+<p>最后一层：  <img src="/img/QQ截图20150614124925.jpg" alt=""><br>中间层<br>    <img src="/img/QQ截图20150614124944.jpg" alt="">   （j代表层节点个数）<br>    <img src="/img/QQ截图20150614124949.jpg" alt=""><br>    <img src="/img/QQ截图20150614125030.jpg" alt=""><br>换句话说, 对于每一层来说，<strong>δ分量都等于后面一层所有的δ加权和</strong>，其中权值就是参数Θ和后一层的激活函数的导数之积。</p>
 <h2 id="参考：">参考：</h2>
 <p>  <a href="http://blog.csdn.net/ywl22/article/details/8606166" target="_blank" rel="external">bias和variance</a><br>  <a href="http://blog.csdn.net/abcjennifer/article/details/7797502" target="_blank" rel="external">Stanford机器学习—-第六讲. 怎样选择机器学习方法、系统</a><br>  <a href="http://blog.csdn.net/sheng_ai/article/details/19931347" target="_blank" rel="external">Back Propagation算法推导过程</a><br>  <a href="http://blog.csdn.net/abcjennifer/article/details/7758797" target="_blank" rel="external">神经网络的学习 Neural Networks learning</a><br>  <a href="http://deeplearning.stanford.edu/wiki/index.php/UFLDL教程" target="_blank" rel="external">UFLDL教程</a></p>
   

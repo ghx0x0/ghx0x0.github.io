@@ -263,11 +263,11 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">2.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number"></span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number"></span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.</span> <span class="toc-text">参考：</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">3.1.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<h2 id="Dropout的理解：_">Dropout的理解： <img src="/img/196.jpg" class="img-topic"></h2>
+		<h1 id="Dropout的理解：_">Dropout的理解： <img src="/img/196.jpg" class="img-topic"></h1>
 <ol>
 <li>在训练过程中，随机的使一些神经元输出为0，使其失效，这样有可能可以获得更多的特征表达，每一个神经元不完全依赖于其他的神经元，但是我们还是保留这个权重；  </li>
 <li>从数学平均的角度来理解的话，每一个batchsize的训练，都有不同的激活的神经元来组成网络，每一次迭代的网络都不相同，但是他们是使用了同一个权重。最终结果可以理解为，不同的神经网络做了平均。   <a id="more"></a>   </li>
@@ -372,7 +372,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">2.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number"></span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number"></span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">1.</span> <span class="toc-text">参考：</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">3.1.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
  
   </div>
 
