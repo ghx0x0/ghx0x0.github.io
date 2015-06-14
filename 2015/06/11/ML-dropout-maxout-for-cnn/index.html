@@ -263,7 +263,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">3.1.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考："><span class="toc-number">4.</span> <span class="toc-text">参考：</span></a></li></ol>
 		
 		</div>
 		
@@ -281,7 +281,7 @@
 <p>与dropout不同，dropout是把该层神经元的输出随机赋给0，但是dropconnect是把该层神经元和下层神经元之间的权重W随机赋给0。一个是输入，一个是输出，dropout是该神经元对下一层所有的神经元都无效，而dropconnect是该神经元对下一层神经元若干个无效。<br>  <img src="/img/QQ截图20150614140317.jpg" alt=""></p>
 <h1 id="Maxout：">Maxout：</h1>
 <p>Maxout是相当于在输入层和隐层之间再添入一个隐隐层，隐隐层分为输入层单元的个数个组，每组k个单元，隐层每个单元的输入和每组内的k个隐隐层单元输出相连。最终隐层的输入是每组内k个隐隐层输出的最大。<br>maxout其实一种激发函数形式。通常情况下，如果激发函数采用sigmoid函数的话，在前向传播过程中，隐含层节点的输出表达式为：<br>  <img src="/img/QQ截图20150614140333.jpg" alt=""><br>而maxout的激发函数，其隐含层输出为：<br>  <img src="/img/QQ截图20150614140338.jpg" alt=""><br>  <img src="/img/QQ截图20150614140345.jpg" alt="">  </p>
-<h2 id="参考：">参考：</h2>
+<h1 id="参考：">参考：</h1>
 <p>  <a href="http://www.cnblogs.com/tornadomeet/p/3258122.html" target="_blank" rel="external">Deep learning：四十一(Dropout简单理解)</a><br>  <a href="http://www.cnblogs.com/tornadomeet/p/3430312.html" target="_blank" rel="external">Deep learning：四十六(DropConnect简单理解)</a><br>  <a href="http://www.cnblogs.com/tornadomeet/p/3428843.html" target="_blank" rel="external">Deep learning：四十五(Maxout简单理解)</a>  </p>
   
 	</div>
@@ -372,7 +372,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-number">3.1.</span> <span class="toc-text">参考：</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropout的理解：_"><span class="toc-number">1.</span> <span class="toc-text">Dropout的理解： </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#修改："><span class="toc-number">1.1.</span> <span class="toc-text">修改：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Dropconnect:"><span class="toc-number">2.</span> <span class="toc-text">Dropconnect:</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Maxout："><span class="toc-number">3.</span> <span class="toc-text">Maxout：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考："><span class="toc-number">4.</span> <span class="toc-text">参考：</span></a></li></ol>
  
   </div>
 
